@@ -11,7 +11,7 @@ export default defineConfig({
 			dataset: 'production',
 			useCdn: false,
 			studioBasePath: '/admin',
-			studioRouterHistory: 'browser',
+			studioRouterHistory: 'hash',
 		}),
 		react(),
 	],
