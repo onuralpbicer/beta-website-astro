@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import sanity from '@sanity/astro';
 import react from '@astrojs/react';
+import { languages } from './sanity/config.ts';
 
 // https://astro.build/config
 export default defineConfig({
@@ -15,4 +16,13 @@ export default defineConfig({
 		}),
 		react(),
 	],
+	i18n: {
+		locales: languages.map((lang) => lang.code),
+		defaultLocale: 'tr',
+	},
+	redirects: {
+		'/': '/tr/ana-sayfa',
+		'/tr': '/tr/ana-sayfa',
+		'/en': '/en/home',
+	},
 });
