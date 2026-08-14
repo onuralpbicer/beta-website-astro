@@ -1,0 +1,57 @@
+---
+import type {
+	AppHeader,
+	GetEntryBySlugAndLocaleResult,
+	GetServicesQueryResult,
+	HeaderInfoQueryResult,
+	SluggableContentTypesQueryResult,
+} from '../shared/sanity.types.ts';
+
+interface AlternateTranslation {
+	code: string;
+	href: string;
+	name: string;
+	hreflang: string;
+}
+
+interface Props {
+	locale: string;
+	alternateTranslations: AlternateTranslation[];
+	header: HeaderInfoQueryResult;
+}
+
+const { locale, header, alternateTranslations } = Astro.props;
+
+const translation = alternateTranslations.find((l) => l.code !== locale)!;
+---
+
+<header
+	class="border-primary-500 sticky top-0 z-50 flex h-16 items-center border-b bg-(--background) p-4 shadow-xs md:h-18"
+>
+	<a href=`/${locale}`>
+		<img alt="logo" class="max-h-16 md:max-h-18" src={header?.logo?.asset?.url} />
+	</a>
+
+	<nav aria-label="Header tabs" class="ml-2 hidden md:block">
+		{
+			header?.headerLinks?.map((link) => {
+				const path = `/${locale}/${link.slug}`;
+				return (
+					<a
+						href={path}
+						class="{path === page.url.pathname ? 'bg-secondary text-secondary-foreground' : 'hover:bg-gray-200'} ml-2 rounded-lg px-2 py-2"
+					>
+						{link.title}
+					</a>
+				);
+			})
+		}
+	</nav>
+
+	<div aria-hidden="true" class="flex-1"></div>
+
+	<a class="mr-4 flex items-center gap-1" href=`/${translation.code}/${translation.href}`>
+		<img alt=`${translation.name} Language Page` src=`/flags/${translation.code}.svg` width="24" />
+		{translation.name}
+	</a>
+</header>

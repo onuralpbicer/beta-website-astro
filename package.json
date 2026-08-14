@@ -16,17 +16,24 @@
 		"@sanity/astro": "^3.5.0",
 		"@sanity/client": "^7.26.2",
 		"@sanity/locale-tr-tr": "^1.2.36",
-		"@sanity/vision": "^6.9.1",
+		"@sanity/vision": "^6.9.2",
+		"@tailwindcss/vite": "^4.3.3",
 		"@types/react": "^19.2.18",
 		"@types/react-dom": "^19.2.4",
 		"@types/react-is": "^19.2.0",
 		"astro": "^7.2.0",
+		"groq": "^6.9.2",
 		"prettier": "^3.9.6",
 		"react": "^19.2.8",
 		"react-dom": "^19.2.8",
 		"react-is": "^19.2.8",
-		"sanity": "^6.9.1",
-		"sanity-plugin-internationalized-array": "^5.1.25",
-		"styled-components": "^6.5.1"
+		"sanity": "^6.9.2",
+		"sanity-plugin-internationalized-array": "^4.0.8",
+		"styled-components": "^6.5.1",
+		"tailwindcss": "^4.3.3"
+	},
+	"devDependencies": {
+		"prettier-plugin-astro": "^0.14.1",
+		"prettier-plugin-tailwindcss": "^0.8.1"
 	}
 }

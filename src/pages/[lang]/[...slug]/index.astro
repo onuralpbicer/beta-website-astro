@@ -1,13 +1,14 @@
 ---
+import PageLayout from '../../../components/PageLayout.astro';
+import '../../../styles/global.css';
+
 export function getStaticPaths() {
-	return [
-		{ params: { lang: "en", slug: "test" }},
-		{ params: { lang: "tr", slug: "test" }},
-	];
+	return [{ params: { lang: 'en', slug: 'test' } }, { params: { lang: 'tr', slug: 'test' } }];
 }
 
 const { lang, slug } = Astro.params;
-
 ---
 
-<p>this is page in {JSON.stringify(Astro.params)}</p>
+<PageLayout locale={lang} slug={slug}>
+	<p>this is page in {JSON.stringify(Astro.params)}</p>
+</PageLayout>

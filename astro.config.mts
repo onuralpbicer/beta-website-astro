@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import sanity from '@sanity/astro';
 import react from '@astrojs/react';
 import { languages } from './sanity/config.ts';
+import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
@@ -24,5 +25,8 @@ export default defineConfig({
 		'/': '/tr/ana-sayfa',
 		'/tr': '/tr/ana-sayfa',
 		'/en': '/en/home',
+	},
+	vite: {
+		plugins: [tailwindcss()],
 	},
 });
