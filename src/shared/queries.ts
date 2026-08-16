@@ -187,7 +187,7 @@ export const getEntriesQuery = groq`*[defined(slug) && count(slug) > 0].slug[]{
   "slug": value
 }`;
 
-export const getFooterQuery = groq`*[_type == 'footer']{
+export const getFooterQuery = groq`*[_type == 'footer' && _id == 'footer']{
   copyright,
   footerColumns[]-> {
     "title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value),

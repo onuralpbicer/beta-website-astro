@@ -1,15 +1,18 @@
 ---
 import Header from './Header.astro';
 import HomeHero from './HomeHero.astro';
+import Footer from './Footer.astro';
 
 import { sanityClient } from 'sanity:client';
 import {
 	getEntryBySlugAndLocale,
+	getFooterQuery,
 	headerInfoQuery,
 	sluggableContentTypesQuery,
 } from '../shared/queries.ts';
 import type {
 	GetEntryBySlugAndLocaleResult,
+	GetFooterQueryResult,
 	HeaderInfoQueryResult,
 	SluggableContentTypesQueryResult,
 } from '../shared/sanity.types.ts';
@@ -36,6 +39,9 @@ let alternateTranslations = languages.map((locale) => ({
 }));
 
 const header = await sanityClient.fetch<HeaderInfoQueryResult>(headerInfoQuery, {
+	locale,
+});
+const footer = await sanityClient.fetch<GetFooterQueryResult>(getFooterQuery, {
 	locale,
 });
 
@@ -106,14 +112,14 @@ const canonicalUrl = `${Astro.url.origin}/${canonicalLang.code}/${canonicalLang.
 	</>
 		}
 	</head>
-	<body>
+	<body class="flex min-h-screen flex-col">
 		<Header locale={locale} header={header} alternateTranslations={alternateTranslations} />
-		<main>
+		<main class="flex-1">
 			{entry?._type === 'homePage' && (
 				<HomeHero entry={entry} header={header} locale={locale} />
 			)}
 			<slot />
 		</main>
-		<footer>footer</footer>
+		<Footer footer={footer} locale={locale} />
 	</body>
 </html>
