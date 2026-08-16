@@ -23,10 +23,11 @@ interface Props {
 const { locale, header, alternateTranslations } = Astro.props;
 
 const translation = alternateTranslations.find((l) => l.code !== locale)!;
+const currentPath = Astro.url.pathname;
 ---
 
 <header
-	class="border-primary-500 sticky top-0 z-50 flex h-16 items-center border-b bg-(--color-page-background) p-4 shadow-xs md:h-18"
+	class="sticky top-0 z-50 flex h-16 items-center bg-(--color-page-background) p-4 shadow-[0_2px_10px_rgba(15,23,42,0.1)] md:h-18"
 >
 	<a href=`/${locale}`>
 		<img alt="logo" class="max-h-16 md:max-h-18" src={header?.logo?.asset?.url} />
@@ -36,10 +37,17 @@ const translation = alternateTranslations.find((l) => l.code !== locale)!;
 		{
 			header?.headerLinks?.map((link) => {
 				const path = `/${locale}/${link.slug}`;
+				const isActive = path === currentPath;
 				return (
 					<a
 						href={path}
-						class="{path === page.url.pathname ? 'bg-secondary text-secondary-foreground' : 'hover:bg-gray-200'} ml-2 rounded-lg px-2 py-2"
+						aria-current={isActive ? 'page' : undefined}
+						class:list={[
+							"relative ml-2 inline-block rounded-lg px-3 py-2 font-medium transition-colors duration-200 ease-out after:absolute after:right-3 after:bottom-1 after:left-3 after:h-px after:origin-center after:scale-x-0 after:bg-[var(--color-button-primary)] after:transition-transform after:duration-200 after:content-[''] hover:after:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-button-primary)]",
+							isActive
+								? 'font-bold text-[var(--color-button-primary)] after:scale-x-100'
+								: 'text-(--color-page-text) hover:text-[var(--color-button-primary)]',
+						]}
 					>
 						{link.title}
 					</a>
@@ -50,8 +58,51 @@ const translation = alternateTranslations.find((l) => l.code !== locale)!;
 
 	<div aria-hidden="true" class="flex-1"></div>
 
-	<a class="mr-4 flex items-center gap-1" href=`/${translation.code}/${translation.href}`>
+	<a
+		class="relative mr-4 flex items-center gap-1 rounded-lg px-2 py-1 transition-colors duration-200 ease-out after:absolute after:right-2 after:bottom-0.5 after:left-2 after:h-px after:origin-center after:scale-x-0 after:bg-[var(--color-button-primary)] after:transition-transform after:duration-200 after:content-[''] hover:text-[var(--color-button-primary)] hover:after:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-button-primary)]"
+		href=`/${translation.code}/${translation.href}`
+	>
 		<img alt=`${translation.name} Language Page` src=`/flags/${translation.code}.svg` width="24" />
 		{translation.name}
 	</a>
+
+	<details class="relative md:hidden">
+		<summary
+			aria-label="Open navigation menu"
+			class="flex size-10 cursor-pointer list-none items-center justify-center rounded-lg transition-colors duration-200 ease-out hover:text-[var(--color-button-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-button-primary)] [&::-webkit-details-marker]:hidden"
+		>
+			<svg aria-hidden="true" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M4 6h16M4 12h16M4 18h16"></path>
+			</svg>
+		</summary>
+		<nav
+			aria-label="Mobile header tabs"
+			class="absolute top-full right-0 mt-3 flex min-w-48 flex-col gap-1 rounded-lg border border-gray-200 bg-(--color-page-background) p-2 shadow-lg"
+		>
+			{
+				header?.headerLinks?.map((link) => {
+					const path = `/${locale}/${link.slug}`;
+					const isActive = path === currentPath;
+					return (
+						<a
+							href={path}
+							aria-current={isActive ? 'page' : undefined}
+							class:list={[
+								"relative self-start rounded-lg px-3 py-2 transition-colors duration-200 ease-out after:absolute after:right-3 after:bottom-1 after:left-3 after:h-px after:origin-center after:scale-x-0 after:bg-[var(--color-button-primary)] after:transition-transform after:duration-200 after:content-[''] hover:after:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-button-primary)]",
+								isActive
+									? 'font-semibold text-[var(--color-button-primary)] after:scale-x-100'
+									: 'text-(--color-page-text) hover:text-[var(--color-button-primary)]',
+							]}
+						>
+							{link.title}
+						</a>
+					);
+				})
+			}
+		</nav>
+	</details>
 </header>
