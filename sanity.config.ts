@@ -6,6 +6,8 @@ import { languages } from './sanity/config.ts';
 import { trTRLocale } from '@sanity/locale-tr-tr';
 import { schemaTypes } from './sanity/schemaTypes';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 export default defineConfig({
 	name: 'default',
 	title: 'beta-website',
@@ -15,13 +17,12 @@ export default defineConfig({
 
 	plugins: [
 		structureTool(),
-		visionTool(),
 		internationalizedArray({
 			languages,
 			defaultLanguages: ['en', 'tr'],
 			fieldTypes: ['string', 'blockContent', 'file', 'number', 'boolean'],
 		}),
-		trTRLocale(),
+		...(isProduction ? [trTRLocale()] : [visionTool()]),
 	],
 
 	schema: {
