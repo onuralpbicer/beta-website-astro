@@ -87,6 +87,8 @@ export const getEntryBySlugAndLocale = groq`*[
 				"slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
 				"title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
 				"description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
+				"price": coalesce(price[language == $locale][0].value, price[language == "tr"][0].value),
+				"currency": coalesce(currency[language == $locale][0].value, currency[language == "tr"][0].value),
 				"tags": string::split(coalesce(tags[language == $locale][0].value, tags[language == "tr"][0].value), ','),
 				"image": select(
 					defined(image) => image.asset->url,
@@ -94,7 +96,14 @@ export const getEntryBySlugAndLocale = groq`*[
 				),
 				"products": select(
 					defined(products) => products[]->{
-					_type
+						_type,
+						"slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
+						"title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
+						"description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
+						"price": coalesce(price[language == $locale][0].value, price[language == "tr"][0].value),
+						"currency": coalesce(currency[language == $locale][0].value, currency[language == "tr"][0].value),
+						"image": select(defined(image) => image.asset->url, null),
+						"products": null
 					},
 					null
 				),
@@ -108,6 +117,8 @@ export const getEntryBySlugAndLocale = groq`*[
 				"slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
 				"title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
 				"description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
+				"price": coalesce(price[language == $locale][0].value, price[language == "tr"][0].value),
+				"currency": coalesce(currency[language == $locale][0].value, currency[language == "tr"][0].value),
 				"tags": string::split(coalesce(tags[language == $locale][0].value, tags[language == "tr"][0].value), ','),
 				"image": select(
 					defined(image) => image.asset->url,
@@ -115,7 +126,12 @@ export const getEntryBySlugAndLocale = groq`*[
 				),
 				"products": select(
 					defined(products) => products[]->{
-					_type
+						_type,
+						"slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
+						"title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
+						"description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
+						"image": select(defined(image) => image.asset->url, null),
+						"products": null
 					},
 					null
 				),
@@ -129,6 +145,8 @@ export const getEntryBySlugAndLocale = groq`*[
 				"slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
 				"title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
 				"description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
+				"price": coalesce(price[language == $locale][0].value, price[language == "tr"][0].value),
+				"currency": coalesce(currency[language == $locale][0].value, currency[language == "tr"][0].value),
 				"tags": string::split(coalesce(tags[language == $locale][0].value, tags[language == "tr"][0].value), ','),
 				"image": select(
 					defined(image) => image.asset->url,
@@ -136,7 +154,12 @@ export const getEntryBySlugAndLocale = groq`*[
 				),
 				"products": select(
 					defined(products) => products[]->{
-					_type
+						_type,
+						"slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
+						"title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
+						"description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
+						"image": select(defined(image) => image.asset->url, null),
+						"products": null
 					},
 					null
 				),

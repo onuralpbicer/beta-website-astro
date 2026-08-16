@@ -1,0 +1,78 @@
+---
+import { getTranslations } from '../shared/translations.ts';
+
+export interface ProductListItem {
+	_type: string;
+	title: string | null;
+	slug: string | null;
+	description: string | null;
+	image: string | null;
+	price?: number | null;
+	currency?: string | null;
+	count?: number;
+}
+
+interface Props {
+	items: ProductListItem[];
+	locale: string;
+}
+
+const { items, locale } = Astro.props;
+const t = getTranslations(locale);
+const isProduct = (item: ProductListItem) => item._type === 'productPage';
+const formatPrice = (item: ProductListItem) =>
+	item.price != null
+		? `${item.price.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${item.currency ?? ''}`.trim()
+		: '';
+---
+
+<div class="grid gap-4">
+	{
+		items.map((item) => (
+			<article class="rounded-lg border border-[#dbe3ed] bg-white p-2 shadow-[0_2px_8px_rgb(37_71_107_/_3%)]">
+				<div class="grid gap-4 md:grid-cols-[minmax(180px,1fr)_minmax(0,2fr)_auto] md:items-center md:p-1">
+					<div class="overflow-hidden rounded-md bg-[#f4f7fb]">
+						{item.image ? (
+							<img
+								class="block aspect-[2.15] w-full object-contain md:aspect-[1.9]"
+								src={item.image}
+								alt={item.title ?? ''}
+								loading="lazy"
+							/>
+						) : (
+							<div class="aspect-[2.15] bg-[#eef3f9] md:aspect-[1.9]" />
+						)}
+					</div>
+					<div class="px-2 md:px-0">
+						<h2 class="m-0 text-[.82rem] font-extrabold">{item.title}</h2>
+						{item.description && (
+							<p class="mt-1.5 line-clamp-2 text-[.68rem] leading-[1.45] text-[#4a5565]">
+								{item.description}
+							</p>
+						)}
+						{!isProduct(item) && item.count != null && (
+							<span class="mt-3 inline-block rounded bg-[#edf3f6] px-1.5 py-1 text-[.62rem] font-bold text-[#286395]">
+								{item.count} {t.productList.categoryCount}
+							</span>
+						)}
+					</div>
+					<div class="flex items-center justify-between gap-3 px-2 pb-1 md:flex-col md:items-end md:px-0 md:pb-0">
+						{isProduct(item) && formatPrice(item) && (
+							<strong class="text-[.82rem] font-extrabold text-[#286395]">
+								{formatPrice(item)}
+							</strong>
+						)}
+						{item.slug && (
+							<a
+								class="rounded-md bg-[#286395] px-3 py-1.5 text-[.65rem] font-bold text-white no-underline transition hover:bg-[#1f4f78]"
+								href={`/${locale}/${item.slug}`}
+							>
+								{isProduct(item) ? t.productList.viewProduct : t.productList.explore}
+							</a>
+						)}
+					</div>
+				</div>
+			</article>
+		))
+	}
+</div>
