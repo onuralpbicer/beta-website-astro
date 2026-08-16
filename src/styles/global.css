@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-	--color-page-background: oklch(0.9 0.025 255);
+	--color-page-background: oklch(0.94 0.012 255);
 	--color-page-text: oklch(0.23 0.035 255);
 	--color-hero-background: oklch(0.23 0.035 255);
 	--color-hero-text: oklch(0.98 0.008 255);
