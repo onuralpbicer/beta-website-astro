@@ -8,7 +8,7 @@ import { schemaTypes } from './sanity/schemaTypes';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-const singletonTypes = new Set(['homePage', 'footer']);
+const singletonTypes = new Set(['homePage', 'footer', 'appHeader']);
 const singletonActions = new Set(['publish', 'discardChanges', 'restore']);
 
 export default defineConfig({
@@ -39,6 +39,14 @@ export default defineConfig({
 								S.document()
 									.schemaType('footer')
 									.documentId('footer'),
+							),
+						S.listItem()
+							.title('Uygulama Başlığı')
+							.id('appHeader')
+							.child(
+								S.document()
+									.schemaType('appHeader')
+									.documentId('appHeader'),
 							),
 
 						...S.documentTypeListItems().filter(

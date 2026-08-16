@@ -1,6 +1,6 @@
 import groq from 'groq';
 
-export const headerInfoQuery = groq`*[_type == "appHeader"][0]{
+export const headerInfoQuery = groq`*[_type == "appHeader" && _id == "appHeader"][0]{
   logo{ asset->{ url } },
   opengraph_logo{ asset->{ url } },
   headerLinks[]->{
