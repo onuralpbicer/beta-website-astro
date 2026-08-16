@@ -4,6 +4,11 @@ import sanity from '@sanity/astro';
 import react from '@astrojs/react';
 import { languages } from './sanity/config.ts';
 import tailwindcss from '@tailwindcss/vite';
+import { config } from 'dotenv';
+
+config();
+
+const PREVIEW_TOKEN = process.env.SANITY_PREVIEW_TOKEN;
 
 // https://astro.build/config
 export default defineConfig({
@@ -14,6 +19,8 @@ export default defineConfig({
 			useCdn: false,
 			studioBasePath: '/admin',
 			studioRouterHistory: 'hash',
+			perspective: PREVIEW_TOKEN ? 'drafts' : 'published',
+			token: PREVIEW_TOKEN,
 		}),
 		react(),
 	],
