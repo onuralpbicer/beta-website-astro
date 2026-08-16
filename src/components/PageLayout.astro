@@ -1,6 +1,5 @@
 ---
 import Header from './Header.astro';
-import HomeHero from './HomeHero.astro';
 import Footer from './Footer.astro';
 
 import { sanityClient } from 'sanity:client';
@@ -21,9 +20,10 @@ import { getTranslations } from '../shared/translations.ts';
 interface Props {
 	locale: string;
 	slug?: string;
+	entry?: GetEntryBySlugAndLocaleResult;
 }
 
-const { locale, slug } = Astro.props;
+const { locale, slug, entry: providedEntry } = Astro.props;
 const t = getTranslations(locale);
 
 const hrefLangs: Record<string, string> = {
@@ -45,9 +45,9 @@ const footer = await sanityClient.fetch<GetFooterQueryResult>(getFooterQuery, {
 	locale,
 });
 
-let entry: GetEntryBySlugAndLocaleResult = null;
+let entry: GetEntryBySlugAndLocaleResult = providedEntry ?? null;
 
-if (slug) {
+if (!entry && slug) {
 	const contentTypes: SluggableContentTypesQueryResult = await sanityClient.fetch(
 		sluggableContentTypesQuery,
 	);
@@ -57,11 +57,10 @@ if (slug) {
 		locale,
 		slug,
 	});
+}
 
-	if (!entry) {
-		return new Response(null, { status: 404 });
-	}
 
+if (entry) {
 	const localeMap = Object.fromEntries(languages.map((locale) => [locale.code, locale.title]));
 
 	alternateTranslations = (entry.slugs ?? []).map(({ code, slug }) => ({
@@ -115,9 +114,6 @@ const canonicalUrl = `${Astro.url.origin}/${canonicalLang.code}/${canonicalLang.
 	<body class="flex min-h-screen flex-col">
 		<Header locale={locale} header={header} alternateTranslations={alternateTranslations} />
 		<main class="flex-1">
-			{entry?._type === 'homePage' && (
-				<HomeHero entry={entry} locale={locale} />
-			)}
 			<slot />
 		</main>
 		<Footer footer={footer} locale={locale} />

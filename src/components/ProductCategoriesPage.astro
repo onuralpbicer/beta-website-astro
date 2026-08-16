@@ -1,0 +1,26 @@
+---
+import type { GetEntryBySlugAndLocaleResult } from '../shared/sanity.types.ts';
+
+type Entry = Extract<NonNullable<GetEntryBySlugAndLocaleResult>, { _type: 'productCategoriesPage' }>;
+
+interface Props {
+	entry: Entry;
+	locale: string;
+}
+
+const { entry, locale } = Astro.props;
+---
+
+<article class="mx-auto max-w-[1280px] px-5 py-12 md:px-16">
+	<h1 class="text-4xl font-bold">{entry.title}</h1>
+	{entry.page.description && <p class="mt-5 max-w-2xl leading-7">{entry.page.description}</p>}
+	<div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+		{entry.page.products?.map((product) => (
+			<a class="rounded-lg border p-5 no-underline" href={product.slug ? `/${locale}/${product.slug}` : undefined}>
+				{product.image && <img class="mb-4 aspect-video w-full rounded object-cover" src={product.image} alt={product.title ?? ''} />}
+				<h2 class="text-xl font-bold">{product.title}</h2>
+				{product.description && <p class="mt-2 text-sm leading-6">{product.description}</p>}
+			</a>
+		))}
+	</div>
+</article>

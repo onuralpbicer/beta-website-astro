@@ -1,0 +1,29 @@
+---
+import type { GetEntryBySlugAndLocaleResult } from '../shared/sanity.types.ts';
+
+type Entry = Extract<NonNullable<GetEntryBySlugAndLocaleResult>, { _type: 'richTextPage' }>;
+
+interface Props {
+	entry: Entry;
+}
+
+const { entry } = Astro.props;
+const blocks = entry.page.content ?? [];
+const text = (block: (typeof blocks)[number]) =>
+	(block.children ?? []).map((child) => child.text ?? '').join('');
+---
+
+<article class="mx-auto max-w-3xl px-5 py-12 md:px-16">
+	<h1 class="text-4xl font-bold">{entry.title}</h1>
+	<div class="prose mt-8 max-w-none">
+		{blocks.map((block) => (
+			<div class="mb-4" class:list={[block.style === 'blockquote' && 'border-l-4 pl-4 italic']}>
+				{block.style === 'h1' && <h2 class="text-3xl font-bold">{text(block)}</h2>}
+				{block.style === 'h2' && <h2 class="text-2xl font-bold">{text(block)}</h2>}
+				{block.style === 'h3' && <h3 class="text-xl font-bold">{text(block)}</h3>}
+				{block.style === 'blockquote' && <blockquote>{text(block)}</blockquote>}
+				{(!block.style || block.style === 'normal') && <p>{text(block)}</p>}
+			</div>
+		))}
+	</div>
+</article>

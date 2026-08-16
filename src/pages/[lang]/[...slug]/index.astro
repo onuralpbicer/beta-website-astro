@@ -1,14 +1,94 @@
 ---
+import { sanityClient } from 'sanity:client';
 import PageLayout from '../../../components/PageLayout.astro';
+import HomeHero from '../../../components/HomeHero.astro';
+import ProductCategoriesPage from '../../../components/ProductCategoriesPage.astro';
+import ProductPage from '../../../components/ProductPage.astro';
+import ProductSubcategoriesPage from '../../../components/ProductSubcategoriesPage.astro';
+import RichTextPage from '../../../components/RichTextPage.astro';
+import ServicesPage from '../../../components/ServicesPage.astro';
 import '../../../styles/global.css';
+import {
+	getEntriesQuery,
+	getEntryBySlugAndLocale,
+	sluggableContentTypesQuery,
+} from '../../../shared/queries.ts';
+import type {
+	GetEntriesQueryResult,
+	GetEntryBySlugAndLocaleResult,
+	SluggableContentTypesQueryResult,
+} from '../../../shared/sanity.types.ts';
 
-export function getStaticPaths() {
-	return [{ params: { lang: 'en', slug: 'test' } }, { params: { lang: 'tr', slug: 'test' } }];
+export async function getStaticPaths() {
+	const entries = await sanityClient.fetch<GetEntriesQueryResult>(getEntriesQuery);
+
+	return entries.flatMap((entry) =>
+		entry?.locale && entry.slug
+			? [{ params: { lang: entry.locale, slug: entry.slug } }]
+			: [],
+	);
 }
 
 const { lang, slug } = Astro.params;
+const contentTypes = await sanityClient.fetch<SluggableContentTypesQueryResult>(
+	sluggableContentTypesQuery,
+);
+const entry = await sanityClient.fetch<GetEntryBySlugAndLocaleResult>(
+	getEntryBySlugAndLocale,
+	{
+		types: contentTypes,
+		locale: lang,
+		slug,
+	},
+);
+
+if (!entry) {
+	return new Response(null, { status: 404 });
+}
+
+let pageKind:
+	| 'home'
+	| 'richText'
+	| 'product'
+	| 'productCategories'
+	| 'productSubcategories'
+	| 'services';
+
+switch (entry._type) {
+	case 'homePage':
+		pageKind = 'home';
+		break;
+	case 'richTextPage':
+		pageKind = 'richText';
+		break;
+	case 'productPage':
+		pageKind = 'product';
+		break;
+	case 'productCategoriesPage':
+		pageKind = 'productCategories';
+		break;
+	case 'productSubcategoriesPage':
+		pageKind = 'productSubcategories';
+		break;
+	case 'servicesPage':
+		pageKind = 'services';
+		break;
+	default:
+		return new Response(null, { status: 404 });
+}
 ---
 
-<PageLayout locale={lang} slug={slug}>
-	<p>this is page in {JSON.stringify(Astro.params)}</p>
+<PageLayout locale={lang} slug={slug} entry={entry}>
+	{pageKind === 'home' && entry._type === 'homePage' && (
+		<HomeHero entry={entry} locale={lang} />
+	)}
+	{pageKind === 'richText' && entry._type === 'richTextPage' && <RichTextPage entry={entry} />}
+	{pageKind === 'product' && entry._type === 'productPage' && <ProductPage entry={entry} locale={lang} />}
+	{pageKind === 'productCategories' && entry._type === 'productCategoriesPage' && (
+		<ProductCategoriesPage entry={entry} locale={lang} />
+	)}
+	{pageKind === 'productSubcategories' && entry._type === 'productSubcategoriesPage' && (
+		<ProductSubcategoriesPage entry={entry} locale={lang} />
+	)}
+	{pageKind === 'services' && entry._type === 'servicesPage' && <ServicesPage entry={entry} locale={lang} />}
 </PageLayout>
