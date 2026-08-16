@@ -58,6 +58,12 @@ export const getEntryBySlugAndLocale = groq`*[
         "slug": coalesce(slug[_key == $locale][0].value, slug[_key == "tr"][0].value),
         "title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value)
       },
+			"contactLinkText": coalesce(contactLinkText[_key == $locale][0].value, contactLinkText[_key == "tr"][0].value),
+			contactLinkTo->{
+				_type,
+				"slug": coalesce(slug[_key == $locale][0].value, slug[_key == "tr"][0].value),
+				"title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value)
+			},
 			"featuredTitle": coalesce(featuredTitle[_key == $locale][0].value, featuredTitle[_key == "tr"][0].value),
       featured[]->{
         _type,

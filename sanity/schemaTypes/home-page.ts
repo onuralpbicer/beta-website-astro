@@ -49,6 +49,19 @@ export default defineType({
 			validation: (r) => r.required(),
 		}),
 		defineField({
+			name: 'contactLinkTo',
+			title: 'İletişim Link Sayfası',
+			type: 'reference',
+			to: [
+				{ type: 'richTextPage' },
+			],
+		}),
+		defineField({
+			name: 'contactLinkText',
+			title: 'İletişim Link Yazısı',
+			type: 'internationalizedArrayString',
+		}),
+		defineField({
 			name: 'keywords',
 			title: 'Anahtar Kelimeler',
 			type: 'internationalizedArrayString',

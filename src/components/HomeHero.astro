@@ -1,7 +1,6 @@
 ---
 import type {
 	GetEntryBySlugAndLocaleResult,
-	HeaderInfoQueryResult,
 } from '../shared/sanity.types.ts';
 import { getTranslations } from '../shared/translations.ts';
 
@@ -12,20 +11,16 @@ type HomePageEntry = Extract<
 
 interface Props {
 	entry: HomePageEntry;
-	header: HeaderInfoQueryResult;
 	locale: string;
 }
 
-const { entry, header, locale } = Astro.props;
+const { entry, locale } = Astro.props;
 const { page } = entry;
 const t = getTranslations(locale);
 const linkSlug = page.linkTo?.slug;
 const linkHref = linkSlug ? `/${locale}/${linkSlug}` : null;
-const contactLink = header?.headerLinks?.find((link) => {
-	const title = link.title?.toLocaleLowerCase() ?? '';
-	return t.homeHero.contactKeywords.some((keyword) => title.includes(keyword));
-});
-const contactHref = contactLink?.slug ? `/${locale}/${contactLink.slug}` : null;
+const contactSlug = page.contactLinkTo?.slug;
+const contactHref = contactSlug ? `/${locale}/${contactSlug}` : null;
 ---
 
 
@@ -66,7 +61,7 @@ const contactHref = contactLink?.slug ? `/${locale}/${contactLink.slug}` : null;
 						class="inline-flex min-h-9 items-center justify-center rounded-[0.3rem] border border-[var(--color-hero-muted)] px-4 py-2 text-xs font-bold text-[var(--color-footer-text)] no-underline transition duration-150 ease-in-out hover:bg-[var(--color-footer-hover)] max-[767px]:w-full"
 						href={contactHref}
 					>
-						{t.homeHero.contactLinkText}
+						{page.contactLinkText}
 					</a>
 				)}
 			</div>

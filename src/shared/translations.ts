@@ -3,16 +3,12 @@ export const translations = {
 		siteTitle: 'Beta Engineering',
 		homeHero: {
 			eyebrow: 'EST. 1997 | TÜRKİYE',
-			contactLinkText: 'Contact Us',
-			contactKeywords: ['contact'],
 		},
 	},
 	tr: {
 		siteTitle: 'Beta Mühendislik',
 		homeHero: {
 			eyebrow: 'EST. 1997 | TÜRKİYE',
-			contactLinkText: 'Bize Ulaşın',
-			contactKeywords: ['ileti'],
 		},
 	},
 } as const;

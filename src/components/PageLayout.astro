@@ -116,7 +116,7 @@ const canonicalUrl = `${Astro.url.origin}/${canonicalLang.code}/${canonicalLang.
 		<Header locale={locale} header={header} alternateTranslations={alternateTranslations} />
 		<main class="flex-1">
 			{entry?._type === 'homePage' && (
-				<HomeHero entry={entry} header={header} locale={locale} />
+				<HomeHero entry={entry} locale={locale} />
 			)}
 			<slot />
 		</main>
