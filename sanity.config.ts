@@ -8,6 +8,9 @@ import { schemaTypes } from './sanity/schemaTypes';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
+const singletonTypes = new Set(['homePage']);
+const singletonActions = new Set(['publish', 'discardChanges', 'restore']);
+
 export default defineConfig({
 	name: 'default',
 	title: 'beta-website',
@@ -16,7 +19,25 @@ export default defineConfig({
 	dataset: 'production',
 
 	plugins: [
-		structureTool(),
+		structureTool({
+			structure: (S) =>
+				S.list()
+					.title('Content')
+					.items([
+						S.listItem()
+							.title('Ana Sayfa')
+							.id('homePage')
+							.child(
+								S.document()
+									.schemaType('homePage')
+									.documentId('homePage'),
+							),
+
+						...S.documentTypeListItems().filter(
+							(item) => !singletonTypes.has(item.getId() ?? ''),
+						),
+					]),
+		}),
 		internationalizedArray({
 			languages,
 			defaultLanguages: ['en', 'tr'],
@@ -27,5 +48,15 @@ export default defineConfig({
 
 	schema: {
 		types: schemaTypes,
+		templates: (templates) =>
+			templates.filter(({ schemaType }) => !singletonTypes.has(schemaType)),
+	},
+	document: {
+		actions: (input, context) =>
+			singletonTypes.has(context.schemaType)
+				? input.filter(
+						({ action }) => action && singletonActions.has(action),
+					)
+				: input,
 	},
 });

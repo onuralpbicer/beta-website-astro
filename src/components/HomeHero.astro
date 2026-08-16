@@ -1,0 +1,85 @@
+---
+import type {
+	GetEntryBySlugAndLocaleResult,
+	HeaderInfoQueryResult,
+} from '../shared/sanity.types.ts';
+import { getTranslations } from '../shared/translations.ts';
+
+type HomePageEntry = Extract<
+	NonNullable<GetEntryBySlugAndLocaleResult>,
+	{ _type: 'homePage' }
+>;
+
+interface Props {
+	entry: HomePageEntry;
+	header: HeaderInfoQueryResult;
+	locale: string;
+}
+
+const { entry, header, locale } = Astro.props;
+const { page } = entry;
+const t = getTranslations(locale);
+const linkSlug = page.linkTo?.slug;
+const linkHref = linkSlug ? `/${locale}/${linkSlug}` : null;
+const contactLink = header?.headerLinks?.find((link) => {
+	const title = link.title?.toLocaleLowerCase() ?? '';
+	return t.homeHero.contactKeywords.some((keyword) => title.includes(keyword));
+});
+const contactHref = contactLink?.slug ? `/${locale}/${contactLink.slug}` : null;
+---
+
+
+<section
+	class="bg-[#1d2c3f] text-[#f7f9fc]"
+	aria-labelledby="home-hero-title"
+>
+	<div
+		class="mx-auto grid max-w-[1280px] grid-cols-1 gap-8 overflow-hidden px-5 py-9 md:min-h-[292px] md:grid-cols-[minmax(0,1fr)_minmax(22rem,1fr)] md:items-center md:gap-16 md:px-16 md:py-14"
+	>
+		<div class="max-w-[42rem] self-center">
+			<p
+				class="mb-4 inline-block rounded-full bg-[#29445f] px-2.5 py-1 text-[0.625rem] font-bold uppercase tracking-[0.1em] text-[#dce8f4]"
+			>
+				{t.homeHero.eyebrow}
+			</p>
+			<h1
+				id="home-hero-title"
+				class="m-0 max-w-[17ch] text-[clamp(2.25rem,4vw,3.75rem)] font-bold leading-[1.05] tracking-[-0.045em]"
+			>
+				{page.heroTitle}
+			</h1>
+			<p class="mt-5 max-w-[37rem] text-[clamp(0.8rem,1.1vw,0.95rem)] leading-[1.55] text-[#d5deea]">
+				{page.heroDescription}
+			</p>
+
+			<div class="mt-5 flex flex-wrap gap-2.5 max-[767px]:flex-col">
+				{linkHref && page.linkText && (
+					<a
+						class="inline-flex min-h-9 items-center justify-center rounded-[0.3rem] border border-transparent bg-[#3d79a9] px-4 py-2 text-xs font-bold text-white no-underline transition duration-150 ease-in-out hover:bg-[#4d8cbd] max-[767px]:w-full"
+						href={linkHref}
+					>
+						{page.linkText}
+					</a>
+				)}
+				{contactHref && (
+					<a
+						class="inline-flex min-h-9 items-center justify-center rounded-[0.3rem] border border-[#d5deea] px-4 py-2 text-xs font-bold text-white no-underline transition duration-150 ease-in-out hover:bg-[#dde3eb]/[0.12] max-[767px]:w-full"
+						href={contactHref}
+					>
+						{t.homeHero.contactLinkText}
+					</a>
+				)}
+			</div>
+		</div>
+
+	{page.heroImage?.asset?.url && (
+		<div class="relative min-h-52 self-stretch md:min-h-[206px]">
+			<img
+				class="relative z-[1] block h-full min-h-52 w-full rounded-[0.65rem] object-cover md:min-h-[206px]"
+				src={page.heroImage.asset.url}
+				alt={page.heroTitle ?? ''}
+			/>
+		</div>
+	)}
+	</div>
+</section>

@@ -76,18 +76,5 @@ export default defineType({
 				}),
 			],
 		}),
-
-		defineField({
-			name: 'whyUsTitle',
-			title: 'Neden Biz Başlığı',
-			type: 'internationalizedArrayString',
-			validation: (r) => r.required(),
-		}),
-		defineField({
-			name: 'whyUs',
-			title: 'Neden Biz?',
-			type: 'array',
-			of: [defineField({ type: 'reference', name: 'whyUs', to: [{ type: 'whyUs' }] })],
-		}),
 	],
 });

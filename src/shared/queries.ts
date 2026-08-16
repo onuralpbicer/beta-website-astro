@@ -68,11 +68,6 @@ export const getEntryBySlugAndLocale = groq`*[
           null
         )
       },
-      "whyUsTitle": coalesce(whyUsTitle[_key == $locale][0].value, whyUsTitle[_key == "tr"][0].value),
-			whyUs[]->{
-        "title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value),
-				iconName,
-      },
      "keywords": string::split(
         coalesce(keywords[_key == $locale][0].value, keywords[_key == "tr"][0].value),
         ","
@@ -183,7 +178,7 @@ export const getEntryBySlugAndLocale = groq`*[
   )
 }[0]`;
 
-export const getHomePageQuery = groq`*[_type == 'homePage']{
+export const getHomePageQuery = groq`*[_type == 'homePage' && _id == 'homePage']{
   "slug": slug[_key == $locale][0].value
 }[0]`;
 

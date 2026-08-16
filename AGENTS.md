@@ -8,6 +8,22 @@ astro dev --background
 
 Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
 
+## Sanity schema and type generation
+
+After changing files in `sanity/schemaTypes/`, regenerate the Sanity schema and
+TypeScript types:
+
+```sh
+pnpm sanity schema extract
+pnpm sanity typegen generate
+```
+
+After updating any GROQ query, run TypeScript type generation:
+
+```sh
+pnpm sanity typegen generate
+```
+
 ## Documentation
 
 Full documentation: https://docs.astro.build

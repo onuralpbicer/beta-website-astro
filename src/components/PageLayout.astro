@@ -1,5 +1,6 @@
 ---
 import Header from './Header.astro';
+import HomeHero from './HomeHero.astro';
 
 import { sanityClient } from 'sanity:client';
 import {
@@ -13,12 +14,14 @@ import type {
 	SluggableContentTypesQueryResult,
 } from '../shared/sanity.types.ts';
 import { languages } from '../../sanity/config.ts';
+import { getTranslations } from '../shared/translations.ts';
 interface Props {
 	locale: string;
 	slug?: string;
 }
 
 const { locale, slug } = Astro.props;
+const t = getTranslations(locale);
 
 const hrefLangs: Record<string, string> = {
 	en: 'en-US',
@@ -70,7 +73,7 @@ const canonicalUrl = `${Astro.url.origin}/${canonicalLang.code}/${canonicalLang.
 
 <html lang={locale}>
 	<head>
-		<title>{locale === 'en' ? 'Beta Engineering' : 'Beta Mühendislik'}</title>
+		<title>{t.siteTitle}</title>
 
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -106,6 +109,9 @@ const canonicalUrl = `${Astro.url.origin}/${canonicalLang.code}/${canonicalLang.
 	<body>
 		<Header locale={locale} header={header} alternateTranslations={alternateTranslations} />
 		<main>
+			{entry?._type === 'homePage' && (
+				<HomeHero entry={entry} header={header} locale={locale} />
+			)}
 			<slot />
 		</main>
 		<footer>footer</footer>
