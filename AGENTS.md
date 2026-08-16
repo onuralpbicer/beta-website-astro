@@ -97,7 +97,8 @@ destructive operations; verify exact IDs first.
 Tailwind CSS v4 is wired through `@tailwindcss/vite`; there is no Tailwind
 config file to edit. Shared design tokens and the default page background live
 in `src/styles/global.css`. Prefer the existing CSS variables and utility
-classes before introducing one-off colors or duplicated layout styles.
+classes before introducing one-off colors or duplicated layout styles. Use 
+Tailwind for styling instead of creating custom normal css in <style> blocks.
 
 `src/shared/queries.ts` is the source of truth for GROQ queries.
 `src/shared/sanity.types.ts` is generated and should not be edited by hand.

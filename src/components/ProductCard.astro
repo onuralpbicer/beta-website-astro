@@ -1,0 +1,52 @@
+---
+import { getTranslations } from '../shared/translations.ts';
+
+interface Props {
+	product: {
+		title: string | null;
+		slug: string | null;
+		image: string | null;
+		price: number | null;
+		currency: string | null;
+	};
+	locale: string;
+}
+
+const { product, locale } = Astro.props;
+const t = getTranslations(locale);
+const href = product.slug ? `/${locale}/${product.slug}` : undefined;
+const price =
+	product.price != null
+		? `${product.price.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${product.currency ?? ''}`.trim()
+		: '';
+---
+
+<a
+	class="group flex min-w-0 flex-col overflow-hidden rounded-lg border border-[#dbe3ed] bg-white text-(--color-page-text) no-underline transition duration-150 hover:-translate-y-0.5 hover:shadow-[0_8px_22px_rgb(37_71_107_/_10%)]"
+	href={href}
+>
+	<div class="m-2 overflow-hidden rounded-md bg-[#f4f7fb]">
+		{
+			product.image ? (
+				<img
+					class="block aspect-[1.9] w-full object-contain"
+					src={product.image}
+					alt={product.title ?? ''}
+					loading="lazy"
+				/>
+			) : (
+				<div class="block min-h-[130px] bg-[#f4f7fb]" aria-hidden="true" />
+			)
+		}
+	</div>
+	<div class="flex flex-1 flex-col px-2.5 pb-2.5">
+		<h3 class="m-0 min-h-[2.4em] text-[0.72rem] leading-[1.2] font-bold uppercase">
+			{product.title}
+		</h3>
+		{price && <p class="my-1.5 mb-2.5 text-[0.76rem] font-extrabold text-[#286395]">{price}</p>}
+		<span
+			class="mt-auto rounded-md bg-[#edf3f6] p-1.5 text-center text-[0.67rem] font-bold text-[#286395]"
+			>{t.product.viewProduct}</span
+		>
+	</div>
+</a>
