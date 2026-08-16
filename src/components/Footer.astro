@@ -16,7 +16,7 @@ const columnGridClass =
 			: 'md:grid-cols-3';
 ---
 
-<footer class="bg-[#1f5f8b] text-white">
+<footer class="bg-[var(--color-footer-background)] text-[var(--color-footer-text)]">
 	<div class="mx-auto max-w-[1280px] px-5 py-10 md:px-16 md:py-12">
 		{columns.length > 0 && (
 			<nav
@@ -27,7 +27,7 @@ const columnGridClass =
 					(column) =>
 						column?.title && (
 							<section class="text-left">
-								<h2 class="text-sm font-bold text-white">{column.title}</h2>
+								<h2 class="text-sm font-bold text-[var(--color-footer-text)]">{column.title}</h2>
 								{column.links && column.links.length > 0 && (
 									<ul class="mt-3 space-y-2">
 										{column.links.map(
@@ -36,7 +36,7 @@ const columnGridClass =
 												link.slug && (
 													<li>
 														<a
-															class="inline-block text-sm text-[#e1edf5] underline-offset-4 transition-colors hover:text-white hover:underline focus:outline-2 focus:outline-offset-4 focus:outline-white"
+															class="inline-block text-sm text-[var(--color-footer-link)] underline-offset-4 transition-colors hover:text-[var(--color-footer-text)] hover:underline focus:outline-2 focus:outline-offset-4 focus:outline-[var(--color-footer-text)]"
 															href={`/${locale}/${link.slug}`}
 														>
 															{link.title}
@@ -52,7 +52,7 @@ const columnGridClass =
 		</nav>
 		)}
 
-		<div class="mt-10 border-t border-white/25 pt-5 text-center text-xs text-[#d5e5ef]">
+		<div class="mt-10 border-t border-[var(--color-footer-border)] pt-5 text-center text-xs text-[var(--color-footer-muted)]">
 			<span>{footer?.copyright ?? ''}</span><span aria-hidden="true"> &#169; </span>
 			<span data-current-year aria-label="current year"></span>
 		</div>

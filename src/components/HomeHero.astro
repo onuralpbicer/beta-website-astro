@@ -30,7 +30,7 @@ const contactHref = contactLink?.slug ? `/${locale}/${contactLink.slug}` : null;
 
 
 <section
-	class="bg-[#1d2c3f] text-[#f7f9fc]"
+	class="bg-[var(--color-hero-background)] text-[var(--color-hero-text)]"
 	aria-labelledby="home-hero-title"
 >
 	<div
@@ -38,7 +38,7 @@ const contactHref = contactLink?.slug ? `/${locale}/${contactLink.slug}` : null;
 	>
 		<div class="max-w-[42rem] self-center">
 			<p
-				class="mb-4 inline-block rounded-full bg-[#29445f] px-2.5 py-1 text-[0.625rem] font-bold uppercase tracking-[0.1em] text-[#dce8f4]"
+				class="mb-4 inline-block rounded-full bg-[var(--color-hero-badge)] px-2.5 py-1 text-[0.625rem] font-bold uppercase tracking-[0.1em] text-[var(--color-hero-badge-text)]"
 			>
 				{t.homeHero.eyebrow}
 			</p>
@@ -48,14 +48,14 @@ const contactHref = contactLink?.slug ? `/${locale}/${contactLink.slug}` : null;
 			>
 				{page.heroTitle}
 			</h1>
-			<p class="mt-5 max-w-[37rem] text-[clamp(0.8rem,1.1vw,0.95rem)] leading-[1.55] text-[#d5deea]">
+			<p class="mt-5 max-w-[37rem] text-[clamp(0.8rem,1.1vw,0.95rem)] leading-[1.55] text-[var(--color-hero-muted)]">
 				{page.heroDescription}
 			</p>
 
 			<div class="mt-5 flex flex-wrap gap-2.5 max-[767px]:flex-col">
 				{linkHref && page.linkText && (
 					<a
-						class="inline-flex min-h-9 items-center justify-center rounded-[0.3rem] border border-transparent bg-[#3d79a9] px-4 py-2 text-xs font-bold text-white no-underline transition duration-150 ease-in-out hover:bg-[#4d8cbd] max-[767px]:w-full"
+						class="inline-flex min-h-9 items-center justify-center rounded-[0.3rem] border border-transparent bg-[var(--color-button-primary)] px-4 py-2 text-xs font-bold text-[var(--color-footer-text)] no-underline transition duration-150 ease-in-out hover:bg-[var(--color-button-primary-hover)] max-[767px]:w-full"
 						href={linkHref}
 					>
 						{page.linkText}
@@ -63,7 +63,7 @@ const contactHref = contactLink?.slug ? `/${locale}/${contactLink.slug}` : null;
 				)}
 				{contactHref && (
 					<a
-						class="inline-flex min-h-9 items-center justify-center rounded-[0.3rem] border border-[#d5deea] px-4 py-2 text-xs font-bold text-white no-underline transition duration-150 ease-in-out hover:bg-[#dde3eb]/[0.12] max-[767px]:w-full"
+						class="inline-flex min-h-9 items-center justify-center rounded-[0.3rem] border border-[var(--color-hero-muted)] px-4 py-2 text-xs font-bold text-[var(--color-footer-text)] no-underline transition duration-150 ease-in-out hover:bg-[var(--color-footer-hover)] max-[767px]:w-full"
 						href={contactHref}
 					>
 						{t.homeHero.contactLinkText}

@@ -1,14 +1,30 @@
 @import "tailwindcss";
 
 :root {
-	background: #dde3eb;
-	color: #1d2c3f;
+	--color-page-background: oklch(0.9 0.025 255);
+	--color-page-text: oklch(0.23 0.035 255);
+	--color-hero-background: oklch(0.23 0.035 255);
+	--color-hero-text: oklch(0.98 0.008 255);
+	--color-hero-badge: oklch(0.32 0.055 250);
+	--color-hero-muted: oklch(0.88 0.03 250);
+	--color-hero-badge-text: oklch(0.92 0.025 250);
+	--color-button-primary: oklch(0.53 0.1 245);
+	--color-button-primary-hover: oklch(0.61 0.11 240);
+	--color-footer-background: oklch(0.45 0.1 240);
+	--color-footer-text: oklch(1 0 0);
+	--color-footer-link: oklch(0.93 0.025 240);
+	--color-footer-muted: oklch(0.89 0.03 235);
+	--color-footer-border: oklch(1 0 0 / 25%);
+	--color-footer-hover: oklch(0.9 0.025 255 / 12%);
+
+	background: var(--color-page-background);
+	color: var(--color-page-text);
 	font-family: Inter, ui-sans-serif, system-ui, sans-serif;
 }
 
 html,
 body {
-	background: #dde3eb;
+	background: var(--color-page-background);
 	margin: 0;
 	min-height: 100%;
 }
