@@ -204,7 +204,7 @@ export const getFooterQuery = groq`*[_type == 'footer' && _id == 'footer']{
   }
 }[0]`;
 
-export const getServicesQuery = groq`*[_type == 'servicesPage']{
+export const getServicesQuery = groq`*[_type == 'servicesPage' && _id == 'servicesPage']{
   "description": coalesce(description[_key == $locale][0].value, description[_key == "tr"][0].value),
 	"slug": coalesce(slug[_key == $locale][0].value, slug[_key == "tr"][0].value),
   products[]->{
