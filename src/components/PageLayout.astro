@@ -2,18 +2,10 @@
 import Header from './Header.astro';
 import Footer from './Footer.astro';
 
-import { sanityClient } from 'sanity:client';
-import {
-	getEntryBySlugAndLocale,
-	getFooterQuery,
-	headerInfoQuery,
-	sluggableContentTypesQuery,
-} from '../shared/queries.ts';
 import type {
 	GetEntryBySlugAndLocaleResult,
 	GetFooterQueryResult,
 	HeaderInfoQueryResult,
-	SluggableContentTypesQueryResult,
 } from '../shared/sanity.types.ts';
 import { languages } from '../../sanity/config.ts';
 import { getTranslations } from '../shared/translations.ts';
@@ -21,9 +13,11 @@ interface Props {
 	locale: string;
 	slug?: string;
 	entry?: GetEntryBySlugAndLocaleResult;
+	header: HeaderInfoQueryResult;
+	footer: GetFooterQueryResult;
 }
 
-const { locale, slug, entry: providedEntry } = Astro.props;
+const { locale, slug, entry, header, footer } = Astro.props;
 const t = getTranslations(locale);
 
 const hrefLangs: Record<string, string> = {
@@ -37,28 +31,6 @@ let alternateTranslations = languages.map((locale) => ({
 	href: locale.code,
 	hreflang: hrefLangs[locale.code] ?? locale.code,
 }));
-
-const header = await sanityClient.fetch<HeaderInfoQueryResult>(headerInfoQuery, {
-	locale,
-});
-const footer = await sanityClient.fetch<GetFooterQueryResult>(getFooterQuery, {
-	locale,
-});
-
-let entry: GetEntryBySlugAndLocaleResult = providedEntry ?? null;
-
-if (!entry && slug) {
-	const contentTypes: SluggableContentTypesQueryResult = await sanityClient.fetch(
-		sluggableContentTypesQuery,
-	);
-
-	entry = await sanityClient.fetch(getEntryBySlugAndLocale, {
-		types: contentTypes,
-		locale,
-		slug,
-	});
-}
-
 
 if (entry) {
 	const localeMap = Object.fromEntries(languages.map((locale) => [locale.code, locale.title]));

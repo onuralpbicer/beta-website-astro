@@ -12,35 +12,53 @@ import {
 	getEntriesQuery,
 	getEntryBySlugAndLocale,
 	sluggableContentTypesQuery,
+	headerInfoQuery,
+	getFooterQuery,
 } from '../../../shared/queries.ts';
 import type {
 	GetEntriesQueryResult,
 	GetEntryBySlugAndLocaleResult,
+	GetFooterQueryResult,
+	HeaderInfoQueryResult,
 	SluggableContentTypesQueryResult,
 } from '../../../shared/sanity.types.ts';
-
 export async function getStaticPaths() {
-	const entries = await sanityClient.fetch<GetEntriesQueryResult>(getEntriesQuery);
+	const [entries, contentTypes, headerEn, headerTr, footerEn, footerTr] = await Promise.all([
+		sanityClient.fetch<GetEntriesQueryResult>(getEntriesQuery),
+		sanityClient.fetch<SluggableContentTypesQueryResult>(sluggableContentTypesQuery),
+		sanityClient.fetch<HeaderInfoQueryResult>(headerInfoQuery, { locale: 'en' }),
+		sanityClient.fetch<HeaderInfoQueryResult>(headerInfoQuery, { locale: 'tr' }),
+		sanityClient.fetch<GetFooterQueryResult>(getFooterQuery, { locale: 'en' }),
+		sanityClient.fetch<GetFooterQueryResult>(getFooterQuery, { locale: 'tr' }),
+	]);
 
-	return entries.flatMap((entry) =>
-		entry?.locale && entry.slug
-			? [{ params: { lang: entry.locale, slug: entry.slug } }]
-			: [],
+	const sharedByLocale = {
+		en: { contentTypes, header: headerEn, footer: footerEn },
+		tr: { contentTypes, header: headerTr, footer: footerTr },
+	};
+
+	const paths = entries.flatMap((entry) =>
+		entry?.locale && entry.slug ? [{ locale: entry.locale, slug: entry.slug }] : [],
+	);
+
+	return Promise.all(
+		paths.map(async ({ locale, slug }) => {
+			const shared = sharedByLocale[locale as keyof typeof sharedByLocale];
+			const entry = await sanityClient.fetch<GetEntryBySlugAndLocaleResult>(
+				getEntryBySlugAndLocale,
+				{ types: shared.contentTypes, locale, slug },
+			);
+
+			return {
+				params: { lang: locale, slug },
+				props: { shared, entry },
+			};
+		}),
 	);
 }
 
 const { lang, slug } = Astro.params;
-const contentTypes = await sanityClient.fetch<SluggableContentTypesQueryResult>(
-	sluggableContentTypesQuery,
-);
-const entry = await sanityClient.fetch<GetEntryBySlugAndLocaleResult>(
-	getEntryBySlugAndLocale,
-	{
-		types: contentTypes,
-		locale: lang,
-		slug,
-	},
-);
+const { shared, entry } = Astro.props;
 
 if (!entry) {
 	return new Response(null, { status: 404 });
@@ -78,7 +96,13 @@ switch (entry._type) {
 }
 ---
 
-<PageLayout locale={lang} slug={slug} entry={entry}>
+<PageLayout
+	locale={lang}
+	slug={slug}
+	entry={entry}
+	header={shared.header}
+	footer={shared.footer}
+>
 	{pageKind === 'home' && entry._type === 'homePage' && (
 		<HomeHero entry={entry} locale={lang} />
 	)}
