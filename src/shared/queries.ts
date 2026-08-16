@@ -5,8 +5,8 @@ export const headerInfoQuery = groq`*[_type == "appHeader" && _id == "appHeader"
   opengraph_logo{ asset->{ url } },
   headerLinks[]->{
     _type,
-    "title": title[_key == $locale][0].value,
-    "slug": slug[_key == $locale][0].value
+    "title": title[language == $locale][0].value,
+    "slug": slug[language == $locale][0].value
   }
 }`;
 
@@ -19,75 +19,75 @@ export const sluggableContentTypesQuery = groq`array::unique(
 
 export const getEntryBySlugAndLocale = groq`*[
   _type in $types &&
-  coalesce(slug[_key == $locale][0].value, slug[_key == $locale][0].value) == $slug
+  coalesce(slug[language == $locale][0].value, slug[language == $locale][0].value) == $slug
 ]{
   _id,
   _type,
   "title": coalesce(
-    title[_key == $locale][0].value,
-    title[_key == "tr"][0].value
+    title[language == $locale][0].value,
+    title[language == "tr"][0].value
   ),
   "metaDescription": coalesce(
-    metaDescription[_key == $locale][0].value,
-    metaDescription[_key == "tr"][0].value
+    metaDescription[language == $locale][0].value,
+    metaDescription[language == "tr"][0].value
   ),
   "slug": coalesce(
-    slug[_key == $locale][0].value,
-    slug[_key == "tr"][0].value
+    slug[language == $locale][0].value,
+    slug[language == "tr"][0].value
   ),
   "slugs": slug[]{
-    "code": _key,
+    "code": language,
     "slug": value
   },
 	// Type-specific payload
   "page": select(
     _type == "richTextPage" => {
       "content": coalesce(
-        content[_key == $locale][0].value,
-        content[_key == "tr"][0].value
+        content[language == $locale][0].value,
+        content[language == "tr"][0].value
       )
     },
 
     _type == "homePage" => {
-      "heroTitle": coalesce(heroTitle[_key == $locale][0].value, heroTitle[_key == "tr"][0].value),
-      "heroDescription": coalesce(heroDescription[_key == $locale][0].value, heroDescription[_key == "tr"][0].value),
+      "heroTitle": coalesce(heroTitle[language == $locale][0].value, heroTitle[language == "tr"][0].value),
+      "heroDescription": coalesce(heroDescription[language == $locale][0].value, heroDescription[language == "tr"][0].value),
       heroImage{ asset->{ url } },
-      "linkText": coalesce(linkText[_key == $locale][0].value, linkText[_key == "tr"][0].value),
+      "linkText": coalesce(linkText[language == $locale][0].value, linkText[language == "tr"][0].value),
       linkTo->{
         _type,
-        "slug": coalesce(slug[_key == $locale][0].value, slug[_key == "tr"][0].value),
-        "title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value)
+        "slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
+        "title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value)
       },
-			"contactLinkText": coalesce(contactLinkText[_key == $locale][0].value, contactLinkText[_key == "tr"][0].value),
+			"contactLinkText": coalesce(contactLinkText[language == $locale][0].value, contactLinkText[language == "tr"][0].value),
 			contactLinkTo->{
 				_type,
-				"slug": coalesce(slug[_key == $locale][0].value, slug[_key == "tr"][0].value),
-				"title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value)
+				"slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
+				"title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value)
 			},
-			"featuredTitle": coalesce(featuredTitle[_key == $locale][0].value, featuredTitle[_key == "tr"][0].value),
+			"featuredTitle": coalesce(featuredTitle[language == $locale][0].value, featuredTitle[language == "tr"][0].value),
       featured[]->{
         _type,
-        "slug": coalesce(slug[_key == $locale][0].value, slug[_key == "tr"][0].value),
-        "title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value),
+        "slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
+        "title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
         "image": select(
           defined(image) => image.asset->url,
           null
         )
       },
      "keywords": string::split(
-        coalesce(keywords[_key == $locale][0].value, keywords[_key == "tr"][0].value),
+        coalesce(keywords[language == $locale][0].value, keywords[language == "tr"][0].value),
         ","
       )
     },
 
     _type == "productCategoriesPage" => {
-			"description": coalesce(description[_key == $locale][0].value, description[_key == "tr"][0].value),
+			"description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
 			products[]->{
 				_type,
-				"slug": coalesce(slug[_key == $locale][0].value, slug[_key == "tr"][0].value),
-				"title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value),
-				"description": coalesce(description[_key == $locale][0].value, description[_key == "tr"][0].value),
-				"tags": string::split(coalesce(tags[_key == $locale][0].value, tags[_key == "tr"][0].value), ','),
+				"slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
+				"title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
+				"description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
+				"tags": string::split(coalesce(tags[language == $locale][0].value, tags[language == "tr"][0].value), ','),
 				"image": select(
 					defined(image) => image.asset->url,
 					null
@@ -102,13 +102,13 @@ export const getEntryBySlugAndLocale = groq`*[
 		},
 
     _type == "productSubcategoriesPage" => {
-			"description": coalesce(description[_key == $locale][0].value, description[_key == "tr"][0].value),
+			"description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
 			products[]->{
 				_type,
-				"slug": coalesce(slug[_key == $locale][0].value, slug[_key == "tr"][0].value),
-				"title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value),
-				"description": coalesce(description[_key == $locale][0].value, description[_key == "tr"][0].value),
-				"tags": string::split(coalesce(tags[_key == $locale][0].value, tags[_key == "tr"][0].value), ','),
+				"slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
+				"title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
+				"description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
+				"tags": string::split(coalesce(tags[language == $locale][0].value, tags[language == "tr"][0].value), ','),
 				"image": select(
 					defined(image) => image.asset->url,
 					null
@@ -123,13 +123,13 @@ export const getEntryBySlugAndLocale = groq`*[
 		},
 
     _type == "servicesPage" => {
-			"description": coalesce(description[_key == $locale][0].value, description[_key == "tr"][0].value),
+			"description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
 			products[]->{
 				_type,
-				"slug": coalesce(slug[_key == $locale][0].value, slug[_key == "tr"][0].value),
-				"title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value),
-				"description": coalesce(description[_key == $locale][0].value, description[_key == "tr"][0].value),
-				"tags": string::split(coalesce(tags[_key == $locale][0].value, tags[_key == "tr"][0].value), ','),
+				"slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
+				"title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
+				"description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
+				"tags": string::split(coalesce(tags[language == $locale][0].value, tags[language == "tr"][0].value), ','),
 				"image": select(
 					defined(image) => image.asset->url,
 					null
@@ -144,21 +144,21 @@ export const getEntryBySlugAndLocale = groq`*[
 		},
 
     _type == "productPage" => {
-			"description": coalesce(description[_key == $locale][0].value, description[_key == "tr"][0].value),
+			"description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
 			"document": {
-				"url": coalesce(document[_key == $locale][0].value.asset->url, document[_key == "tr"][0].value.asset->url), 
-				"name": coalesce(document[_key == $locale][0].value.asset->originalFilename, document[_key == "tr"][0].value.asset->originalFilename),
+				"url": coalesce(document[language == $locale][0].value.asset->url, document[language == "tr"][0].value.asset->url), 
+				"name": coalesce(document[language == $locale][0].value.asset->originalFilename, document[language == "tr"][0].value.asset->originalFilename),
 			},
-			"brand": coalesce(brand[_key == $locale][0].value, brand[_key == "tr"][0].value),
-			"productCode": coalesce(productCode[_key == $locale][0].value, productCode[_key == "tr"][0].value),
+			"brand": coalesce(brand[language == $locale][0].value, brand[language == "tr"][0].value),
+			"productCode": coalesce(productCode[language == $locale][0].value, productCode[language == "tr"][0].value),
 			"image": select(
 					defined(image) => image.asset->url,
 					null
 			),
 			"price": {
-				"price": coalesce(price[_key == $locale][0].value, price[_key == "tr"][0].value),
-				"currency": coalesce(currency[_key == $locale][0].value, currency[_key == "tr"][0].value),
-				"taxIncluded": coalesce(taxIncluded[_key == $locale][0].value, taxIncluded[_key == "tr"][0].value),
+				"price": coalesce(price[language == $locale][0].value, price[language == "tr"][0].value),
+				"currency": coalesce(currency[language == $locale][0].value, currency[language == "tr"][0].value),
+				"taxIncluded": coalesce(taxIncluded[language == $locale][0].value, taxIncluded[language == "tr"][0].value),
 			},
 			"keyFeatures": select(
 				$locale == "en" => enKeyFeatures,
@@ -166,16 +166,16 @@ export const getEntryBySlugAndLocale = groq`*[
 				trKeyFeatures
 			),
 			relatedProducts[]->{
-					"slug": coalesce(slug[_key == $locale][0].value, slug[_key == "tr"][0].value),
-					"title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value),
-					"price": coalesce(price[_key == $locale][0].value, price[_key == "tr"][0].value),
-					"currency": coalesce(currency[_key == $locale][0].value, currency[_key == "tr"][0].value),
+					"slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
+					"title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
+					"price": coalesce(price[language == $locale][0].value, price[language == "tr"][0].value),
+					"currency": coalesce(currency[language == $locale][0].value, currency[language == "tr"][0].value),
 					"image": select(
 						defined(image) => image.asset->url,
 						null
 					),
 			},
-			"parent": coalesce(parent->slug[_key == $locale][0].value, parent->slug[_key == "tr"][0].value)
+			"parent": coalesce(parent->slug[language == $locale][0].value, parent->slug[language == "tr"][0].value)
 		},
 
     // default
@@ -185,45 +185,45 @@ export const getEntryBySlugAndLocale = groq`*[
 }[0]`;
 
 export const getHomePageQuery = groq`*[_type == 'homePage' && _id == 'homePage']{
-  "slug": slug[_key == $locale][0].value
+  "slug": slug[language == $locale][0].value
 }[0]`;
 
 export const getEntriesQuery = groq`*[defined(slug) && count(slug) > 0].slug[]{
-  "locale": _key,
+  "locale": language,
   "slug": value
 }`;
 
 export const getFooterQuery = groq`*[_type == 'footer' && _id == 'footer']{
   copyright,
   footerColumns[]-> {
-    "title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value),
+    "title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
     links[]-> {
-      "title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value),
-      "slug": coalesce(slug[_key == $locale][0].value, slug[_key == "tr"][0].value),
+      "title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
+      "slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
     }
   }
 }[0]`;
 
 export const getServicesQuery = groq`*[_type == 'servicesPage' && _id == 'servicesPage']{
-  "description": coalesce(description[_key == $locale][0].value, description[_key == "tr"][0].value),
-	"slug": coalesce(slug[_key == $locale][0].value, slug[_key == "tr"][0].value),
+  "description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
+	"slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
   products[]->{
     _type,
-    "slug": coalesce(slug[_key == $locale][0].value, slug[_key == "tr"][0].value),
-    "title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value),
-    "description": coalesce(description[_key == $locale][0].value, description[_key == "tr"][0].value),
+    "slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
+    "title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
+    "description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
     "products": select(
       defined(products) => products[]->{
         _type,
-        "slug": coalesce(slug[_key == $locale][0].value, slug[_key == "tr"][0].value),
-        "title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value),
-        "description": coalesce(description[_key == $locale][0].value, description[_key == "tr"][0].value),
+        "slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
+        "title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
+        "description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
         "products": select(
           defined(products) => products[]->{
             _type,
-            "slug": coalesce(slug[_key == $locale][0].value, slug[_key == "tr"][0].value),
-            "title": coalesce(title[_key == $locale][0].value, title[_key == "tr"][0].value),
-            "description": coalesce(description[_key == $locale][0].value, description[_key == "tr"][0].value),
+            "slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
+            "title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
+            "description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value),
             "products": null
           },
           null
