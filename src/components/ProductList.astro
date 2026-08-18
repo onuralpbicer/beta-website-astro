@@ -29,7 +29,10 @@ const formatPrice = (item: ProductListItem) =>
 <div class="grid gap-4">
 	{
 		items.map((item) => (
-			<article class="rounded-lg border border-[#dbe3ed] bg-white p-2 shadow-[0_2px_8px_rgb(37_71_107_/_3%)]">
+			<a
+				href={item.slug ? `/${locale}/${item.slug}` : undefined}
+				class="group block rounded-lg border border-[#dbe3ed] bg-white p-2 text-(--color-page-text) no-underline shadow-[0_2px_8px_rgb(37_71_107_/_3%)] transition duration-150 hover:-translate-y-0.5 hover:shadow-[0_8px_22px_rgb(37_71_107_/_10%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#286395]"
+			>
 				<div class="grid gap-4 md:grid-cols-[minmax(180px,1fr)_minmax(0,2fr)_auto] md:items-center md:p-1">
 					<div class="overflow-hidden rounded-md bg-[#f4f7fb]">
 						{item.image ? (
@@ -63,16 +66,13 @@ const formatPrice = (item: ProductListItem) =>
 							</strong>
 						)}
 						{item.slug && (
-							<a
-								class="rounded-md bg-[#286395] px-3 py-1.5 text-[.65rem] font-bold text-white no-underline transition hover:bg-[#1f4f78]"
-								href={`/${locale}/${item.slug}`}
-							>
+							<span class="rounded-md bg-[#286395] px-3 py-1.5 text-[.65rem] font-bold text-white transition group-hover:bg-[#1f4f78]">
 								{isProduct(item) ? t.productList.viewProduct : t.productList.explore}
-							</a>
+							</span>
 						)}
 					</div>
 				</div>
-			</article>
+			</a>
 		))
 	}
 </div>
