@@ -2,6 +2,7 @@
 import { sanityClient } from 'sanity:client';
 import PageLayout from '../../../components/PageLayout.astro';
 import HomeHero from '../../../components/HomeHero.astro';
+import HomeFeatured from '../../../components/HomeFeatured.astro';
 import ProductCategoriesPage from '../../../components/ProductCategoriesPage.astro';
 import ProductPage from '../../../components/ProductPage.astro';
 import ProductSubcategoriesPage from '../../../components/ProductSubcategoriesPage.astro';
@@ -65,12 +66,7 @@ if (!entry) {
 }
 
 let pageKind:
-	| 'home'
-	| 'richText'
-	| 'product'
-	| 'productCategories'
-	| 'productSubcategories'
-	| 'services';
+	'home' | 'richText' | 'product' | 'productCategories' | 'productSubcategories' | 'services';
 
 switch (entry._type) {
 	case 'homePage':
@@ -96,23 +92,34 @@ switch (entry._type) {
 }
 ---
 
-<PageLayout
-	locale={lang}
-	slug={slug}
-	entry={entry}
-	header={shared.header}
-	footer={shared.footer}
->
-	{pageKind === 'home' && entry._type === 'homePage' && (
-		<HomeHero entry={entry} locale={lang} />
-	)}
+<PageLayout locale={lang} slug={slug} entry={entry} header={shared.header} footer={shared.footer}>
+	{
+		pageKind === 'home' && entry._type === 'homePage' && (
+			<>
+				<HomeHero entry={entry} locale={lang} />
+				<HomeFeatured entry={entry} locale={lang} />
+			</>
+		)
+	}
 	{pageKind === 'richText' && entry._type === 'richTextPage' && <RichTextPage entry={entry} />}
-	{pageKind === 'product' && entry._type === 'productPage' && <ProductPage entry={entry} locale={lang} />}
-	{pageKind === 'productCategories' && entry._type === 'productCategoriesPage' && (
-		<ProductCategoriesPage entry={entry} locale={lang} />
-	)}
-	{pageKind === 'productSubcategories' && entry._type === 'productSubcategoriesPage' && (
-		<ProductSubcategoriesPage entry={entry} locale={lang} />
-	)}
-	{pageKind === 'services' && entry._type === 'servicesPage' && <ServicesPage entry={entry} locale={lang} />}
+	{
+		pageKind === 'product' && entry._type === 'productPage' && (
+			<ProductPage entry={entry} locale={lang} />
+		)
+	}
+	{
+		pageKind === 'productCategories' && entry._type === 'productCategoriesPage' && (
+			<ProductCategoriesPage entry={entry} locale={lang} />
+		)
+	}
+	{
+		pageKind === 'productSubcategories' && entry._type === 'productSubcategoriesPage' && (
+			<ProductSubcategoriesPage entry={entry} locale={lang} />
+		)
+	}
+	{
+		pageKind === 'services' && entry._type === 'servicesPage' && (
+			<ServicesPage entry={entry} locale={lang} />
+		)
+	}
 </PageLayout>

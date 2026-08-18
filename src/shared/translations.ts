@@ -4,6 +4,10 @@ export const translations = {
 		homeHero: {
 			eyebrow: 'EST. 1997 | TÜRKİYE',
 		},
+		homeFeatured: {
+			eyebrow: 'OUR AREAS OF EXPERTISE',
+			explore: 'Explore',
+		},
 		product: {
 			brand: 'Brand',
 			productCode: 'Product Code',
@@ -32,6 +36,10 @@ export const translations = {
 		siteTitle: 'Beta Mühendislik',
 		homeHero: {
 			eyebrow: 'EST. 1997 | TÜRKİYE',
+		},
+		homeFeatured: {
+			eyebrow: 'UZMANLIK ALANLARIMIZ',
+			explore: 'Keşfet',
 		},
 		product: {
 			brand: 'Marka',

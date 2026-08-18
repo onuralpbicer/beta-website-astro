@@ -69,10 +69,7 @@ export const getEntryBySlugAndLocale = groq`*[
         _type,
         "slug": coalesce(slug[language == $locale][0].value, slug[language == "tr"][0].value),
         "title": coalesce(title[language == $locale][0].value, title[language == "tr"][0].value),
-        "image": select(
-          defined(image) => image.asset->url,
-          null
-        )
+        "description": coalesce(description[language == $locale][0].value, description[language == "tr"][0].value)
       },
      "keywords": string::split(
         coalesce(keywords[language == $locale][0].value, keywords[language == "tr"][0].value),

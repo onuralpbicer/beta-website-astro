@@ -1,0 +1,66 @@
+---
+import type { GetEntryBySlugAndLocaleResult } from '../shared/sanity.types.ts';
+import { getCategoryDescription } from '../shared/categoryDescriptions.ts';
+import { getTranslations } from '../shared/translations.ts';
+
+type HomePageEntry = Extract<NonNullable<GetEntryBySlugAndLocaleResult>, { _type: 'homePage' }>;
+
+type FeaturedItem = NonNullable<HomePageEntry['page']['featured']>[number];
+
+interface Props {
+	entry: HomePageEntry;
+	locale: string;
+}
+
+const { entry, locale } = Astro.props;
+const t = getTranslations(locale);
+const featured = (entry.page.featured ?? []).filter(
+	(item): item is FeaturedItem & { slug: string } => Boolean(item.slug),
+);
+---
+
+{
+	featured.length > 0 && (
+		<section
+			class="bg-(--color-page-background) text-(--color-page-text)"
+			aria-labelledby="home-featured-title"
+		>
+			<div class="mx-auto w-[calc(100%-2rem)] max-w-[1120px] py-12 md:py-16">
+				<p class="m-0 text-[0.6rem] font-extrabold tracking-[0.08em] text-[#2e6898]">
+					{t.homeFeatured.eyebrow}
+				</p>
+				<h2
+					id="home-featured-title"
+					class="m-[0.35rem_0_1.5rem] max-w-2xl text-[clamp(1.45rem,3vw,2rem)] leading-[1.1] font-extrabold"
+				>
+					{entry.page.featuredTitle}
+				</h2>
+
+				<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+					{featured.map((item) => {
+						const description = getCategoryDescription(item.slug, locale, item.description);
+
+						return (
+							<a
+								href={`/${locale}/${item.slug}`}
+								class="group flex min-h-40 flex-col rounded-lg border border-[#dbe3ed] bg-white p-4 text-(--color-page-text) no-underline shadow-[0_2px_8px_rgb(37_71_107_/_3%)] transition duration-150 hover:-translate-y-0.5 hover:border-[#b8cfe3] hover:shadow-[0_8px_22px_rgb(37_71_107_/_10%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#286395]"
+							>
+								<h3 class="m-0 text-[0.82rem] leading-[1.25] font-extrabold group-hover:text-[#286395]">
+									{item.title}
+								</h3>
+								{description && (
+									<p class="mt-2 line-clamp-3 text-[0.68rem] leading-[1.45] text-[#5b6675]">
+										{description}
+									</p>
+								)}
+								<span class="mt-auto pt-4 text-[0.66rem] font-bold text-[#286395]">
+									{t.homeFeatured.explore} <span aria-hidden="true">→</span>
+								</span>
+							</a>
+						);
+					})}
+				</div>
+			</div>
+		</section>
+	)
+}

@@ -1,5 +1,6 @@
 ---
 import type { GetEntryBySlugAndLocaleResult } from '../shared/sanity.types.ts';
+import { getCategoryDescription } from '../shared/categoryDescriptions.ts';
 import { getTranslations } from '../shared/translations.ts';
 import ProductList, { type ProductListItem } from './ProductList.astro';
 
@@ -15,6 +16,7 @@ interface Props {
 
 const { entry, locale } = Astro.props;
 const t = getTranslations(locale);
+const description = getCategoryDescription(entry.slug, locale, entry.page.description);
 const items: ProductListItem[] = (entry.page.products ?? []).map((item) => ({
 	_type: item._type,
 	title: item.title,
@@ -28,17 +30,15 @@ const items: ProductListItem[] = (entry.page.products ?? []).map((item) => ({
 
 <article class="bg-(--color-page-background) text-(--color-page-text)">
 	<div class="mx-auto w-[calc(100%-2rem)] max-w-[1120px] py-10 md:py-14">
-		<span class="block text-[.6rem] font-extrabold tracking-[.04em] text-[#2e6898]"
-			>{entry.title}</span
-		><h1 class="m-[.35rem_0_.75rem] text-[clamp(1.7rem,4vw,2.4rem)] leading-none font-extrabold">
+		<h1 class="m-[.35rem_0_.75rem] text-[clamp(1.7rem,4vw,2.4rem)] leading-none font-extrabold">
 			{entry.title}
-		</h1>{
-			entry.page.description && (
-				<p class="mb-8 max-w-4xl text-[.78rem] leading-[1.55] text-[#4a5565]">
-					{entry.page.description}
-				</p>
+		</h1>
+		{
+			description && (
+				<p class="mb-8 max-w-4xl text-[.78rem] leading-[1.55] text-[#4a5565]">{description}</p>
 			)
-		}<div class="mb-3 flex items-center justify-between text-[.68rem] font-bold text-[#556171]">
+		}
+		<div class="mb-3 flex items-center justify-between text-[.68rem] font-bold text-[#556171]">
 			<span>{items.length} {items.length === 1 ? t.productList.item : t.productList.items}</span>
 		</div><ProductList items={items} locale={locale} />
 	</div>
