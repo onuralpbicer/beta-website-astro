@@ -6,6 +6,7 @@ import type {
 	HeaderInfoQueryResult,
 	SluggableContentTypesQueryResult,
 } from '../shared/sanity.types.ts';
+import { getSanityImageProps } from '../shared/sanityImage.ts';
 
 interface AlternateTranslation {
 	code: string;
@@ -24,13 +25,30 @@ const { locale, header, alternateTranslations } = Astro.props;
 
 const translation = alternateTranslations.find((l) => l.code !== locale)!;
 const currentPath = Astro.url.pathname;
+const logo = header?.logo?.asset?.url
+	? getSanityImageProps(header.logo.asset.url, {
+			widths: [120, 180, 240, 360, 480],
+			fallbackWidth: 240,
+		})
+	: null;
 ---
 
 <header
 	class="sticky top-0 z-50 flex h-16 items-center bg-(--color-page-background) p-4 shadow-[0_2px_10px_rgba(15,23,42,0.1)] md:h-18"
 >
 	<a href=`/${locale}`>
-		<img alt="logo" class="max-h-16 md:max-h-18" src={header?.logo?.asset?.url} />
+		{
+			logo && (
+				<img
+					alt="logo"
+					class="max-h-16 md:max-h-18"
+					src={logo.src}
+					srcset={logo.srcset}
+					sizes="(min-width: 768px) 240px, 180px"
+					decoding="async"
+				/>
+			)
+		}
 	</a>
 
 	<nav aria-label="Header tabs" class="ml-2 hidden md:block">

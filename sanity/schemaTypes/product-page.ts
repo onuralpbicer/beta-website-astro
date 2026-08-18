@@ -89,11 +89,5 @@ export default defineType({
 				}),
 			],
 		}),
-		defineField({
-			name: 'parent',
-			type: 'reference',
-			title: 'Kategorisi veya Alt kategorisi',
-			to: [{ type: 'productCategoriesPage' }, { type: 'productSubcategoriesPage' }],
-		}),
 	],
 });

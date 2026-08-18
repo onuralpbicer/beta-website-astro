@@ -1,5 +1,6 @@
 ---
 import { getTranslations } from '../shared/translations.ts';
+import { getSanityImageProps } from '../shared/sanityImage.ts';
 
 export interface ProductListItem {
 	_type: string;
@@ -24,55 +25,67 @@ const formatPrice = (item: ProductListItem) =>
 	item.price != null
 		? `${item.price.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${item.currency ?? ''}`.trim()
 		: '';
+const getListImage = (source: string) =>
+	getSanityImageProps(source, {
+		widths: [240, 360, 480, 640, 960],
+		fallbackWidth: 480,
+	});
 ---
 
 <div class="grid gap-4">
 	{
-		items.map((item) => (
-			<a
-				href={item.slug ? `/${locale}/${item.slug}` : undefined}
-				class="group block rounded-lg border border-[#dbe3ed] bg-white p-2 text-(--color-page-text) no-underline shadow-[0_2px_8px_rgb(37_71_107_/_3%)] transition duration-150 hover:-translate-y-0.5 hover:shadow-[0_8px_22px_rgb(37_71_107_/_10%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#286395]"
-			>
-				<div class="grid gap-4 md:grid-cols-[minmax(180px,1fr)_minmax(0,2fr)_auto] md:items-center md:p-1">
-					<div class="overflow-hidden rounded-md bg-[#f4f7fb]">
-						{item.image ? (
-							<img
-								class="block aspect-[2.15] w-full object-contain md:aspect-[1.9]"
-								src={item.image}
-								alt={item.title ?? ''}
-								loading="lazy"
-							/>
-						) : (
-							<div class="aspect-[2.15] bg-[#eef3f9] md:aspect-[1.9]" />
-						)}
+		items.map((item) => {
+			const image = item.image ? getListImage(item.image) : null;
+
+			return (
+				<a
+					href={item.slug ? `/${locale}/${item.slug}` : undefined}
+					class="group block rounded-lg border border-[#dbe3ed] bg-white p-2 text-(--color-page-text) no-underline shadow-[0_2px_8px_rgb(37_71_107_/_3%)] transition duration-150 hover:-translate-y-0.5 hover:shadow-[0_8px_22px_rgb(37_71_107_/_10%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#286395]"
+				>
+					<div class="grid gap-4 md:grid-cols-[minmax(180px,1fr)_minmax(0,2fr)_auto] md:items-center md:p-1">
+						<div class="overflow-hidden rounded-md bg-[#f4f7fb]">
+							{image ? (
+								<img
+									class="block aspect-[2.15] w-full object-contain md:aspect-[1.9]"
+									src={image.src}
+									srcset={image.srcset}
+									sizes="(min-width: 1120px) 300px, (min-width: 768px) 28vw, calc(100vw - 3rem)"
+									alt={item.title ?? ''}
+									loading="lazy"
+									decoding="async"
+								/>
+							) : (
+								<div class="aspect-[2.15] bg-[#eef3f9] md:aspect-[1.9]" />
+							)}
+						</div>
+						<div class="px-2 md:px-0">
+							<h2 class="m-0 text-[.82rem] font-extrabold">{item.title}</h2>
+							{item.description && (
+								<p class="mt-1.5 line-clamp-2 text-[.68rem] leading-[1.45] text-[#4a5565]">
+									{item.description}
+								</p>
+							)}
+							{!isProduct(item) && item.count != null && (
+								<span class="mt-3 inline-block rounded bg-[#edf3f6] px-1.5 py-1 text-[.62rem] font-bold text-[#286395]">
+									{item.count} {t.productList.categoryCount}
+								</span>
+							)}
+						</div>
+						<div class="flex items-center justify-between gap-3 px-2 pb-1 md:flex-col md:items-end md:px-0 md:pb-0">
+							{isProduct(item) && formatPrice(item) && (
+								<strong class="text-[.82rem] font-extrabold text-[#286395]">
+									{formatPrice(item)}
+								</strong>
+							)}
+							{item.slug && (
+								<span class="rounded-md bg-[#286395] px-3 py-1.5 text-[.65rem] font-bold text-white transition group-hover:bg-[#1f4f78]">
+									{isProduct(item) ? t.productList.viewProduct : t.productList.explore}
+								</span>
+							)}
+						</div>
 					</div>
-					<div class="px-2 md:px-0">
-						<h2 class="m-0 text-[.82rem] font-extrabold">{item.title}</h2>
-						{item.description && (
-							<p class="mt-1.5 line-clamp-2 text-[.68rem] leading-[1.45] text-[#4a5565]">
-								{item.description}
-							</p>
-						)}
-						{!isProduct(item) && item.count != null && (
-							<span class="mt-3 inline-block rounded bg-[#edf3f6] px-1.5 py-1 text-[.62rem] font-bold text-[#286395]">
-								{item.count} {t.productList.categoryCount}
-							</span>
-						)}
-					</div>
-					<div class="flex items-center justify-between gap-3 px-2 pb-1 md:flex-col md:items-end md:px-0 md:pb-0">
-						{isProduct(item) && formatPrice(item) && (
-							<strong class="text-[.82rem] font-extrabold text-[#286395]">
-								{formatPrice(item)}
-							</strong>
-						)}
-						{item.slug && (
-							<span class="rounded-md bg-[#286395] px-3 py-1.5 text-[.65rem] font-bold text-white transition group-hover:bg-[#1f4f78]">
-								{isProduct(item) ? t.productList.viewProduct : t.productList.explore}
-							</span>
-						)}
-					</div>
-				</div>
-			</a>
-		))
+				</a>
+			);
+		})
 	}
 </div>

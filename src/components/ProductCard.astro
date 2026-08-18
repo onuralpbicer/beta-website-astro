@@ -1,5 +1,6 @@
 ---
 import { getTranslations } from '../shared/translations.ts';
+import { getSanityImageProps } from '../shared/sanityImage.ts';
 
 interface Props {
 	product: {
@@ -15,6 +16,12 @@ interface Props {
 const { product, locale } = Astro.props;
 const t = getTranslations(locale);
 const href = product.slug ? `/${locale}/${product.slug}` : undefined;
+const image = product.image
+	? getSanityImageProps(product.image, {
+			widths: [240, 360, 480, 640, 720],
+			fallbackWidth: 480,
+		})
+	: null;
 const price =
 	product.price != null
 		? `${product.price.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${product.currency ?? ''}`.trim()
@@ -27,12 +34,15 @@ const price =
 >
 	<div class="m-2 overflow-hidden rounded-md bg-[#f4f7fb]">
 		{
-			product.image ? (
+			image ? (
 				<img
 					class="block aspect-[1.9] w-full object-contain"
-					src={product.image}
+					src={image.src}
+					srcset={image.srcset}
+					sizes="(min-width: 1120px) 350px, (min-width: 768px) calc((100vw - 4rem) / 3), (min-width: 640px) calc((100vw - 3rem) / 2), calc(100vw - 2rem)"
 					alt={product.title ?? ''}
 					loading="lazy"
+					decoding="async"
 				/>
 			) : (
 				<div class="block min-h-[130px] bg-[#f4f7fb]" aria-hidden="true" />

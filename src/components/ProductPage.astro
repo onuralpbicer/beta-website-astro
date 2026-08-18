@@ -1,5 +1,6 @@
 ---
 import type { GetEntryBySlugAndLocaleResult } from '../shared/sanity.types.ts';
+import { getSanityImageProps } from '../shared/sanityImage.ts';
 import { getTranslations } from '../shared/translations.ts';
 import ProductCard from './ProductCard.astro';
 
@@ -13,6 +14,12 @@ interface Props {
 const { entry, locale } = Astro.props;
 const product = entry.page;
 const t = getTranslations(locale);
+const productImage = product.image
+	? getSanityImageProps(product.image, {
+			widths: [320, 480, 640, 800, 1120],
+			fallbackWidth: 800,
+		})
+	: null;
 const price =
 	product.price.price != null
 		? `${product.price.price.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${product.price.currency ?? ''}`.trim()
@@ -28,11 +35,15 @@ const price =
 				class="grid min-h-[260px] place-items-center rounded-[9px] border border-[#d8e1ed] bg-white p-3.5"
 			>
 				{
-					product.image ? (
+					productImage ? (
 						<img
 							class="block max-h-[360px] w-full rounded-md object-contain"
-							src={product.image}
+							src={productImage.src}
+							srcset={productImage.srcset}
+							sizes="(min-width: 1120px) 575px, (min-width: 768px) calc(54vw - 3rem), calc(100vw - 3.75rem)"
 							alt={entry.title ?? ''}
+							fetchpriority="high"
+							decoding="async"
 						/>
 					) : (
 						<div class="aspect-[1.4] w-full bg-[#eef3f9]" />

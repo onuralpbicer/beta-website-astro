@@ -1,13 +1,9 @@
 ---
-import type {
-	GetEntryBySlugAndLocaleResult,
-} from '../shared/sanity.types.ts';
+import type { GetEntryBySlugAndLocaleResult } from '../shared/sanity.types.ts';
+import { getSanityImageProps } from '../shared/sanityImage.ts';
 import { getTranslations } from '../shared/translations.ts';
 
-type HomePageEntry = Extract<
-	NonNullable<GetEntryBySlugAndLocaleResult>,
-	{ _type: 'homePage' }
->;
+type HomePageEntry = Extract<NonNullable<GetEntryBySlugAndLocaleResult>, { _type: 'homePage' }>;
 
 interface Props {
 	entry: HomePageEntry;
@@ -21,8 +17,13 @@ const linkSlug = page.linkTo?.slug;
 const linkHref = linkSlug ? `/${locale}/${linkSlug}` : null;
 const contactSlug = page.contactLinkTo?.slug;
 const contactHref = contactSlug ? `/${locale}/${contactSlug}` : null;
+const heroImage = page.heroImage?.asset?.url
+	? getSanityImageProps(page.heroImage.asset.url, {
+			widths: [480, 720, 960, 1200],
+			fallbackWidth: 960,
+		})
+	: null;
 ---
-
 
 <section
 	class="bg-[var(--color-hero-background)] text-[var(--color-hero-text)]"
@@ -33,48 +34,60 @@ const contactHref = contactSlug ? `/${locale}/${contactSlug}` : null;
 	>
 		<div class="max-w-[42rem] self-center">
 			<p
-				class="mb-4 inline-block rounded-full bg-[var(--color-hero-badge)] px-2.5 py-1 text-[0.625rem] font-bold uppercase tracking-[0.1em] text-[var(--color-hero-badge-text)]"
+				class="mb-4 inline-block rounded-full bg-[var(--color-hero-badge)] px-2.5 py-1 text-[0.625rem] font-bold tracking-[0.1em] text-[var(--color-hero-badge-text)] uppercase"
 			>
 				{t.homeHero.eyebrow}
 			</p>
 			<h1
 				id="home-hero-title"
-				class="m-0 max-w-[17ch] text-[clamp(2.25rem,4vw,3.75rem)] font-bold leading-[1.05] tracking-[-0.045em]"
+				class="m-0 max-w-[17ch] text-[clamp(2.25rem,4vw,3.75rem)] leading-[1.05] font-bold tracking-[-0.045em]"
 			>
 				{page.heroTitle}
 			</h1>
-			<p class="mt-5 max-w-[37rem] text-[clamp(0.8rem,1.1vw,0.95rem)] leading-[1.55] text-[var(--color-hero-muted)]">
+			<p
+				class="mt-5 max-w-[37rem] text-[clamp(0.8rem,1.1vw,0.95rem)] leading-[1.55] text-[var(--color-hero-muted)]"
+			>
 				{page.heroDescription}
 			</p>
 
 			<div class="mt-5 flex flex-wrap gap-2.5 max-[767px]:flex-col">
-				{linkHref && page.linkText && (
-					<a
-						class="inline-flex min-h-9 items-center justify-center rounded-[0.3rem] border border-transparent bg-[var(--color-button-primary)] px-4 py-2 text-xs font-bold text-[var(--color-footer-text)] no-underline transition duration-150 ease-in-out hover:bg-[var(--color-button-primary-hover)] max-[767px]:w-full"
-						href={linkHref}
-					>
-						{page.linkText}
-					</a>
-				)}
-				{contactHref && (
-					<a
-						class="inline-flex min-h-9 items-center justify-center rounded-[0.3rem] border border-[var(--color-hero-muted)] px-4 py-2 text-xs font-bold text-[var(--color-footer-text)] no-underline transition duration-150 ease-in-out hover:bg-[var(--color-footer-hover)] max-[767px]:w-full"
-						href={contactHref}
-					>
-						{page.contactLinkText}
-					</a>
-				)}
+				{
+					linkHref && page.linkText && (
+						<a
+							class="inline-flex min-h-9 items-center justify-center rounded-[0.3rem] border border-transparent bg-[var(--color-button-primary)] px-4 py-2 text-xs font-bold text-[var(--color-footer-text)] no-underline transition duration-150 ease-in-out hover:bg-[var(--color-button-primary-hover)] max-[767px]:w-full"
+							href={linkHref}
+						>
+							{page.linkText}
+						</a>
+					)
+				}
+				{
+					contactHref && (
+						<a
+							class="inline-flex min-h-9 items-center justify-center rounded-[0.3rem] border border-[var(--color-hero-muted)] px-4 py-2 text-xs font-bold text-[var(--color-footer-text)] no-underline transition duration-150 ease-in-out hover:bg-[var(--color-footer-hover)] max-[767px]:w-full"
+							href={contactHref}
+						>
+							{page.contactLinkText}
+						</a>
+					)
+				}
 			</div>
 		</div>
 
-	{page.heroImage?.asset?.url && (
-		<div class="relative min-h-52 self-stretch md:min-h-[206px]">
-			<img
-				class="relative z-[1] block h-full min-h-52 w-full rounded-[0.65rem] object-cover md:min-h-[206px]"
-				src={page.heroImage.asset.url}
-				alt={page.heroTitle ?? ''}
-			/>
-		</div>
-	)}
+		{
+			heroImage && (
+				<div class="relative min-h-52 self-stretch md:min-h-[206px]">
+					<img
+						class="relative z-[1] block h-full min-h-52 w-full rounded-[0.65rem] object-cover md:min-h-[206px]"
+						src={heroImage.src}
+						srcset={heroImage.srcset}
+						sizes="(min-width: 1280px) 576px, (min-width: 768px) calc(50vw - 4rem), calc(100vw - 2.5rem)"
+						alt={page.heroTitle ?? ''}
+						fetchpriority="high"
+						decoding="async"
+					/>
+				</div>
+			)
+		}
 	</div>
 </section>

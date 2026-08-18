@@ -9,6 +9,7 @@ import type {
 } from '../shared/sanity.types.ts';
 import { languages } from '../../sanity/config.ts';
 import { getTranslations } from '../shared/translations.ts';
+import { getSanityImageProps } from '../shared/sanityImage.ts';
 interface Props {
 	locale: string;
 	slug?: string;
@@ -43,9 +44,15 @@ if (entry) {
 	}));
 }
 
-const canonicalLang = alternateTranslations.find((l) => l.code === locale)!
-const mainLang = alternateTranslations.find((l) => l.code === 'tr')!
-const canonicalUrl = `${Astro.url.origin}/${canonicalLang.code}/${canonicalLang.href}`
+const canonicalLang = alternateTranslations.find((l) => l.code === locale)!;
+const mainLang = alternateTranslations.find((l) => l.code === 'tr')!;
+const canonicalUrl = `${Astro.url.origin}/${canonicalLang.code}/${canonicalLang.href}`;
+const openGraphImage = header?.opengraph_logo?.asset?.url
+	? getSanityImageProps(header.opengraph_logo.asset.url, {
+			widths: [1200],
+			fallbackWidth: 1200,
+		})
+	: null;
 ---
 
 <html lang={locale}>
@@ -55,32 +62,37 @@ const canonicalUrl = `${Astro.url.origin}/${canonicalLang.code}/${canonicalLang.
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-		{ entry &&
-			<>
-			<link rel="canonical" href={canonicalUrl} />
-			{
-				alternateTranslations.map((translation) =>
-					<link rel="alternate" hreflang={translation.hreflang}
-					      href={`${Astro.url.origin}/${translation.code}/${translation.href}`} />
-				)
-			}
-			<link rel="alternate" hreflang="x-default" href=`${Astro.url.origin}/${mainLang.code}/${mainLang.href}`/>
+		{
+			entry && (
+				<>
+					<link rel="canonical" href={canonicalUrl} />
+					{alternateTranslations.map((translation) => (
+						<link
+							rel="alternate"
+							hreflang={translation.hreflang}
+							href={`${Astro.url.origin}/${translation.code}/${translation.href}`}
+						/>
+					))}
+					<link
+						rel="alternate"
+						hreflang="x-default"
+						href={`${Astro.url.origin}/${mainLang.code}/${mainLang.href}`}
+					/>
 
-			<meta name="description" content={entry.metaDescription}/>
+					<meta name="description" content={entry.metaDescription} />
 
-			<meta property="og:title" content={entry.title}/>
-			<meta property="og:type" content="website"/>
-			<meta property="og:url" content={canonicalUrl}/>
-			<meta property="og:image" content={header!.opengraph_logo?.asset?.url}/>
-			<meta property="og:description" content={entry.metaDescription}/>
-			<meta property="og:locale" content={locale}/>
+					<meta property="og:title" content={entry.title} />
+					<meta property="og:type" content="website" />
+					<meta property="og:url" content={canonicalUrl} />
+					{openGraphImage && <meta property="og:image" content={openGraphImage.src} />}
+					<meta property="og:description" content={entry.metaDescription} />
+					<meta property="og:locale" content={locale} />
 
-				{
-					alternateTranslations.map((translation) =>
-						<meta property="og:locale:alternate" content={translation.code}/>
-					)
-				}
-	</>
+					{alternateTranslations.map((translation) => (
+						<meta property="og:locale:alternate" content={translation.code} />
+					))}
+				</>
+			)
 		}
 	</head>
 	<body class="flex min-h-screen flex-col">

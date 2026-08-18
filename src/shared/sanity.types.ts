@@ -136,7 +136,6 @@ export type ProductPage = {
 			_key: string;
 		} & ProductPageReference
 	>;
-	parent?: ProductCategoriesPageReference | ProductSubcategoriesPageReference;
 };
 
 export type InternationalizedArrayBoolean = Array<
@@ -752,7 +751,7 @@ export type GetEntryBySlugAndLocaleResult =
 					currency: string | null;
 					image: string | null;
 				}> | null;
-				parent: string | null;
+				parent: null;
 			};
 	  }
 	| {
