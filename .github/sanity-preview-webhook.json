@@ -1,0 +1,20 @@
+{
+	"name": "GitHub draft preview",
+	"type": "document",
+	"dataset": "production",
+	"url": "https://api.github.com/repos/onuralpbicer/beta-website-astro/dispatches",
+	"httpMethod": "POST",
+	"apiVersion": "v2025-02-19",
+	"includeDrafts": true,
+	"includeAllVersions": false,
+	"isDisabledByUser": true,
+	"headers": {
+		"Accept": "application/vnd.github+json",
+		"Content-Type": "application/json"
+	},
+	"rule": {
+		"on": ["create", "update", "delete"],
+		"filter": "_type in ['homePage', 'richTextPage', 'productPage', 'productCategoriesPage', 'productSubcategoriesPage', 'servicesPage', 'appHeader', 'footer', 'footerColumn'] && !(_id in path('versions.**'))",
+		"projection": "{\"event_type\": \"sanity-preview\", \"client_payload\": {\"projectId\": \"12mm2gbu\", \"dataset\": \"production\"}}"
+	}
+}

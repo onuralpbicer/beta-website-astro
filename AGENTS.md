@@ -26,6 +26,14 @@ pnpm sanity typegen generate
 
 ## Documentation
 
+When changing CI/CD, Sanity webhooks, release behavior, or Cloudflare hosting,
+read [docs/deployment.md](docs/deployment.md). GitHub Actions owns builds;
+Cloudflare Pages hosts the artifacts. Keep preview drafts separate from
+published production content. Production content rebuilds must use the currently
+deployed commit and hold the same concurrency lock as tag uploads while resolving,
+building, and deploying. Scope debounce cancellation to jobs that cannot interrupt
+an upload. Keep webhook credentials and deploy-hook URLs out of tracked files.
+
 Full documentation: https://docs.astro.build
 
 Consult these guides before working on related tasks:
@@ -97,7 +105,7 @@ destructive operations; verify exact IDs first.
 Tailwind CSS v4 is wired through `@tailwindcss/vite`; there is no Tailwind
 config file to edit. Shared design tokens and the default page background live
 in `src/styles/global.css`. Prefer the existing CSS variables and utility
-classes before introducing one-off colors or duplicated layout styles. Use 
+classes before introducing one-off colors or duplicated layout styles. Use
 Tailwind for styling instead of creating custom normal css in <style> blocks.
 
 `src/shared/queries.ts` is the source of truth for GROQ queries.

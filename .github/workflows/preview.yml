@@ -1,0 +1,142 @@
+name: Preview
+
+on:
+  push:
+    branches: [main]
+  repository_dispatch:
+    types: [sanity-preview]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build draft preview
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name != 'repository_dispatch' ||
+       (github.event.client_payload.projectId == '12mm2gbu' &&
+        github.event.client_payload.dataset == 'production'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Shared by code pushes, manual previews and all Sanity document changes.
+    # Keep this on the build job so new edits cannot cancel an upload.
+    concurrency:
+      group: preview-build-main
+      cancel-in-progress: true
+    outputs:
+      commit: ${{ steps.source.outputs.commit }}
+    steps:
+      - name: Wait for Sanity edits to settle
+        if: github.event_name == 'repository_dispatch'
+        run: sleep 60
+
+      - uses: actions/checkout@v7
+        with:
+          # Webhooks always rebuild trusted trunk code, never a payload ref.
+          ref: main
+          persist-credentials: false
+
+      - name: Record the built commit
+        id: source
+        run: echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Check preview credentials
+        env:
+          SANITY_PREVIEW_TOKEN: ${{ secrets.SANITY_PREVIEW_TOKEN }}
+        run: |
+          if [ -z "$SANITY_PREVIEW_TOKEN" ]; then
+            echo "::error::Set the SANITY_PREVIEW_TOKEN repository secret to a Sanity read token."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - uses: pnpm/action-setup@v6
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build draft site
+        env:
+          SANITY_PREVIEW_TOKEN: ${{ secrets.SANITY_PREVIEW_TOKEN }}
+        run: pnpm build
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: preview-site
+          path: dist/
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 3
+
+  deploy:
+    name: Deploy preview
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    environment:
+      name: preview
+      url: ${{ steps.deploy.outputs.deployment-url }}
+    concurrency:
+      group: cloudflare-pages-preview-main
+      cancel-in-progress: false
+    steps:
+      - name: Skip a superseded preview
+        id: current
+        uses: actions/github-script@v9
+        with:
+          retries: 3
+          script: |
+            const { data } = await github.rest.actions.listWorkflowRuns({
+              ...context.repo,
+              workflow_id: 'preview.yml',
+              branch: 'main',
+              per_page: 100,
+            });
+            const superseded = data.workflow_runs.some(run =>
+              run.run_number > context.runNumber &&
+              !['cancelled', 'skipped'].includes(run.conclusion)
+            );
+            core.setOutput('deploy', String(!superseded));
+            if (superseded) core.notice('A newer preview was requested; skipping this upload.');
+
+      - uses: actions/download-artifact@v8
+        if: steps.current.outputs.deploy == 'true'
+        with:
+          name: preview-site
+          path: dist/
+
+      - uses: actions/setup-node@v7
+        if: steps.current.outputs.deploy == 'true'
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Check deployment credentials
+        if: steps.current.outputs.deploy == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::Set CLOUDFLARE_API_TOKEN in the GitHub preview environment."
+            exit 1
+          fi
+
+      - name: Deploy draft artifact to Cloudflare Pages
+        if: steps.current.outputs.deploy == 'true'
+        id: deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: dba4a4829a48119d0a35590a29f11b91
+          packageManager: npm
+          wranglerVersion: '4'
+          command: pages deploy dist --project-name=beta-website --branch=main --commit-hash=${{ needs.build.outputs.commit }}

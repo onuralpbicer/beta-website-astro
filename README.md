@@ -1,43 +1,60 @@
-# Astro Starter Kit: Minimal
+# Beta website
+
+An Astro static website with an embedded Sanity Studio at `/admin`. Content
+comes from Sanity project `12mm2gbu`, dataset `production`. Turkish is the default
+locale; the public home routes are `/tr/ana-sayfa` and `/en/home`.
+
+## Local development
+
+Use Node 24 and the pnpm version pinned in `package.json`:
 
 ```sh
-pnpm create astro@latest -- --template minimal
+pnpm install --frozen-lockfile
+pnpm exec astro dev --background
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Manage the server with `pnpm exec astro dev status`, `pnpm exec astro dev logs`,
+and `pnpm exec astro dev stop`. See [AGENTS.md](AGENTS.md) for repository rules.
 
-## 🚀 Project Structure
+```sh
+# Published production build
+SANITY_PREVIEW_TOKEN='' pnpm build
 
-Inside of your Astro project, you'll see the following folders and files:
+# Draft build when .env contains a read-only SANITY_PREVIEW_TOKEN
+pnpm build
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+# Serve the generated dist directory locally
+pnpm preview
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Static generation requires access to the Sanity API. Store the optional preview
+read token in the ignored `.env` file. Build output is written to `dist/`.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## CI/CD
 
-Any static assets, like images, can be placed in the `public/` directory.
+GitHub Actions builds the site and uploads artifacts to Cloudflare Pages project
+`beta-website`:
 
-## 🧞 Commands
+- Pull requests, merge queues, and `main` pushes run published build checks.
+- `main` pushes and Sanity content changes update draft previews.
+- Version tags such as `v1.2.3` release production code from `main`.
+- Published Sanity changes rebuild the currently deployed production code.
+- Sanity preview and production events are independently debounced for 60 seconds
+  with shared Actions concurrency groups. Uploads finish without cancellation.
 
-All commands are run from the root of the project, from a terminal:
+See [docs/deployment.md](docs/deployment.md) for GitHub secrets, both Sanity
+webhook templates, environment rules, activation, cleanup status, and rollback.
+The workflows must be merged and secrets configured before they can deploy.
 
-| Command                | Action                                           |
-| :--------------------- | :----------------------------------------------- |
-| `pnpm install`         | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+## Sanity generation
 
-## 👀 Want to learn more?
+After schema changes:
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+```sh
+pnpm sanity schema extract
+pnpm sanity typegen generate
+```
+
+After GROQ query changes, run `pnpm sanity typegen generate`. Runtime queries
+live in `src/shared/queries.ts`; generated types are in
+`src/shared/sanity.types.ts`.
