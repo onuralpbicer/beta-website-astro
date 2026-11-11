@@ -42,6 +42,10 @@ GitHub Actions builds the site and uploads artifacts to Cloudflare Pages project
 - Sanity preview and production events are independently debounced for 60 seconds
   with shared Actions concurrency groups. Uploads finish without cancellation.
 
+Public HTML bodies carry `data-version`, `data-build`, and `data-preview` for
+inspection without visible version text. Production content rebuilds retain
+the deployed release version and receive a new build ID.
+
 See [docs/deployment.md](docs/deployment.md) for GitHub secrets, both Sanity
 webhook templates, environment rules, activation, cleanup status, and rollback.
 The workflows must be merged and secrets configured before they can deploy.

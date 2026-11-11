@@ -33,6 +33,8 @@ published production content. Production content rebuilds must use the currently
 deployed commit and hold the same concurrency lock as tag uploads while resolving,
 building, and deploying. Scope debounce cancellation to jobs that cannot interrupt
 an upload. Keep webhook credentials and deploy-hook URLs out of tracked files.
+Release uploads store the version tag in Cloudflare's commit-message metadata;
+content rebuilds must preserve it while assigning a new HTML body build ID.
 
 Full documentation: https://docs.astro.build
 

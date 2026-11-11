@@ -54,6 +54,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build published site
+        env:
+          SITE_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || 'ci' }}
+          SITE_BUILD_NUMBER: ${{ github.run_id }}.${{ github.run_attempt }}
         run: pnpm build
 
       - name: Upload release site
@@ -65,6 +68,7 @@ jobs:
           if-no-files-found: error
           include-hidden-files: true
           retention-days: 7
+          overwrite: true
 
   deploy:
     name: Deploy production
@@ -108,4 +112,4 @@ jobs:
           packageManager: npm
           wranglerVersion: '4'
           # This is the existing Pages production label, not a Git branch to maintain.
-          command: pages deploy dist --project-name=beta-website --branch=production --commit-hash=${{ github.sha }}
+          command: pages deploy dist --project-name=beta-website --branch=production --commit-hash=${{ github.sha }} --commit-message=${{ github.ref_name }}

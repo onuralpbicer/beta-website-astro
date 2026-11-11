@@ -131,7 +131,7 @@ job uploads the same artifact, retained for seven days. Tags/GitHub Releases are
 not created automatically. Preview artifacts are retained for three days.
 
 Production content updates rebuild the deployed commit with fresh published
-content and do not create tags. Commits predating the pnpm pin use pnpm 10.33.0;
+content and retain its release version; they do not create tags. Commits predating the pnpm pin use pnpm 10.33.0;
 newer commits use their own `packageManager` pin. Content-job retries rebuild
 and refetch content. Tag deployment-job retries reuse their retained artifact;
 rerunning the build refetches content.
@@ -143,10 +143,41 @@ if that is desired. A production deployment without a successful canonical
 deployment, full commit SHA, or a commit reachable from `main` fails closed;
 deploy a valid tagged release first.
 
+## Version and build attributes
+
+Public pages and the custom 404 page expose metadata on their HTML body without
+rendering visible version text:
+
+```html
+<body data-version="v1.2.3" data-build="123456789.1" data-preview="false"></body>
+```
+
+`data-version` is the release tag for production and `preview` for draft preview
+deployments. `data-build` combines the GitHub run ID and attempt, making it unique
+across the release, production-content, and preview workflows. A new content
+rebuild gets a new build ID while retaining the production version. Rerunning a
+build increments its attempt; retrying only an upload retains the existing
+artifact's build ID. Local builds default to `development` / `local` unless
+`SITE_VERSION` and `SITE_BUILD_NUMBER` are supplied. `data-preview` is `true`
+for preview builds. These attributes are on the public site shell, not the
+Sanity integration's separately generated Studio shell or Astro redirect files.
+
+Tag releases save their version in Cloudflare's deployment commit-message field
+using `--commit-message`. Content rebuilds read, validate, and preserve this
+field on every upload, including after rollbacks. Keep that field reserved for
+the release version. Multiple tags on the same commit do not change the stored
+version of an existing deployment.
+
+Deploy an intentional version tag containing this metadata change before using
+production content rebuilds. Older deployments with no version metadata fail
+closed rather than inventing a release version. They also lack the updated body
+attributes until the code change is released.
+
 ## Activation, cleanup and verification
 
-Configure secrets, merge/push the files, and run a manual preview and production
-content rebuild before enabling their Sanity webhooks. Then make several quick
+Configure secrets, merge/push the files, and verify a manual preview. Deploy the
+first intentional version tag with the metadata change, then verify a manual
+production content rebuild before enabling the Sanity webhooks. Then make several quick
 draft changes and verify cancelled waiting/build jobs followed by a fresh preview.
 Verify a normal published change triggers the production content workflow and
 keeps the production code commit unchanged. Live CMS testing changes external

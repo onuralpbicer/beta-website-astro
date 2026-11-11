@@ -1,6 +1,7 @@
 ---
 import Header from './Header.astro';
 import Footer from './Footer.astro';
+import { buildAttributes } from '../shared/buildMetadata';
 
 import type {
 	GetEntryBySlugAndLocaleResult,
@@ -97,7 +98,7 @@ const openGraphImage = header?.opengraph_logo?.asset?.url
 			)
 		}
 	</head>
-	<body class="flex min-h-screen flex-col">
+	<body {...buildAttributes} class="flex min-h-screen flex-col">
 		<Header locale={locale} header={header} alternateTranslations={alternateTranslations} />
 		<main class="flex-1">
 			<slot />

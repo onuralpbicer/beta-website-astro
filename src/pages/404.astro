@@ -1,5 +1,12 @@
 ---
 import '../styles/global.css';
+import { buildAttributes } from '../shared/buildMetadata';
 ---
 
-custom 404 cannot find page
+<html lang="tr">
+	<head>
+		<meta charset="utf-8" />
+		<title>404</title>
+	</head>
+	<body {...buildAttributes}>custom 404 cannot find page</body>
+</html>

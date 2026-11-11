@@ -64,6 +64,8 @@ jobs:
       - name: Build draft site
         env:
           SANITY_PREVIEW_TOKEN: ${{ secrets.SANITY_PREVIEW_TOKEN }}
+          SITE_VERSION: preview
+          SITE_BUILD_NUMBER: ${{ github.run_id }}.${{ github.run_attempt }}
         run: pnpm build
 
       - uses: actions/upload-artifact@v7
@@ -73,6 +75,7 @@ jobs:
           if-no-files-found: error
           include-hidden-files: true
           retention-days: 3
+          overwrite: true
 
   deploy:
     name: Deploy preview
