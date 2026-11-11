@@ -45,8 +45,10 @@ building, and deploying. Scope debounce cancellation to jobs that cannot interru
 an upload. Keep webhook credentials and deploy-hook URLs out of tracked files.
 Release uploads store the version tag in Cloudflare's commit-message metadata;
 content rebuilds must preserve it while assigning a new HTML body build ID.
-Merging to `main` runs checks and a draft preview; only valid `vMAJOR.MINOR.PATCH`
-tags release production code. Webhook debounce waits happen before builds:
+PRs and merge queues run published build checks. A push to `main` runs only the
+draft preview build; do not add a duplicate CI build for the same branch push.
+Only valid `vMAJOR.MINOR.PATCH` tags release production code.
+Webhook debounce waits happen before builds:
 preview cancellation covers waiting/building, while production cancellation
 covers only the waiting job. Public build attributes come from
 `src/shared/buildMetadata.ts` and are used by the shared layout and custom 404.

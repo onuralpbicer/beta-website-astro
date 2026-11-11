@@ -6,7 +6,7 @@ Develop on short-lived branches and merge pull requests into `main`.
 
 | Trigger                                   | Content and code                                        | Result                              |
 | ----------------------------------------- | ------------------------------------------------------- | ----------------------------------- |
-| PR to `main`, merge queue, or `main` push | Published content                                       | `CI` build check                    |
+| PR to `main` or merge queue              | Published content                                       | `CI` build check                    |
 | `main` push or manual `Preview` run       | Draft content, current `main`                           | Preview upload                      |
 | Sanity `sanity-preview` event             | Draft content, current `main`                           | Debounced preview upload            |
 | Push `vMAJOR.MINOR.PATCH` tag             | Published content, tagged commit on `main`              | Production code release             |
@@ -18,6 +18,10 @@ The Pages production branch label is `production`. Uploads explicitly select
 needed. Preview and production share the Sanity `production` dataset but use
 different perspectives. The static preview host serves drafts baked into its
 last successful build.
+
+A push to `main` runs only `Preview`; `CI` does not run on branch pushes.
+Published build checks run before merging through PRs and the merge queue.
+Tagged releases build once and deploy that artifact without rebuilding.
 
 ## GitHub secrets and protection
 
@@ -125,7 +129,7 @@ Durable Object, or Pages deploy hook in the new build path.
 
 ## Code releases and rollback
 
-After merging and passing `Build`:
+After the PR or merge queue passes `Build` and the change is merged:
 
 ```sh
 git switch main

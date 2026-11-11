@@ -55,7 +55,7 @@ empty selects published content. The Studio uses hash routing under `/admin`.
 GitHub Actions builds the site and uploads artifacts to Cloudflare Pages project
 `beta-website`:
 
-- Pull requests, merge queues, and `main` pushes run published build checks.
+- Pull requests and merge queues run published build checks.
 - `main` pushes, manual runs on `main`, and `sanity-preview` events build draft previews.
 - Version tags such as `v1.2.3` release production code from `main`.
 - `sanity-production` events and manual production content runs on `main`
@@ -64,6 +64,7 @@ GitHub Actions builds the site and uploads artifacts to Cloudflare Pages project
   jobs in the same debounce group. Preview builds can also be cancelled;
   production rebuilds and active uploads finish without cancellation.
 
+Each push to `main` runs only the draft preview build, without a second CI build.
 Merging to `main` does not release production code. PRs only run build checks;
 there are no per-PR preview deployments. Preview and production uploads use the
 same Pages project with branch labels `main` and `production`, respectively.
