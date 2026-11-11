@@ -21,7 +21,7 @@ last successful build.
 
 ## GitHub secrets and protection
 
-The user will configure these secrets in `onuralpbicer/beta-website-astro`:
+The workflows require these secrets in `onuralpbicer/beta-website-astro`:
 
 | Location                        | Secret                 | Value                                                                                             |
 | ------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------- |
@@ -43,8 +43,9 @@ Cloudflare credentials are passed only to the steps that need them.
 ## Sanity webhooks
 
 First merge the workflows into default branch `main`; GitHub dispatches require
-the workflow to exist there. Two webhooks are already configured and disabled in
-Sanity Manage → project `12mm2gbu` → API → Webhooks. Their source templates are:
+the workflow to exist there. The setup record below last recorded two disabled
+webhooks in Sanity Manage → project `12mm2gbu` → API → Webhooks. Verify their
+current state before activation. Their source templates are:
 
 - `.github/sanity-preview-webhook.json`: include drafts and published content,
   using event type `sanity-preview`.
@@ -89,6 +90,15 @@ groups cancel the previous waiting job when another event arrives. The wait
 starts when a runner starts the job, so batching is approximate rather than an
 exact timer from webhook receipt. Each event still creates a workflow run;
 retries may create additional runs. Continuous editing can postpone completion.
+
+The wait happens **before checkout, dependency installation, and building**;
+there is no prebuilt artifact waiting for the debounce to expire. For example,
+if the first waiting job starts at 0 seconds and another event starts its
+replacement wait at 45 seconds, only the replacement proceeds to build at
+roughly 105 seconds. This creates two workflow runs but normally only one build.
+Manual runs and `main` pushes skip the wait. If a new event arrives after a
+production rebuild has started, that rebuild finishes and the new event can
+produce a second rebuild.
 
 Preview cancellation covers the wait and build job. Code pushes and manual
 previews share that group but skip the wait. Uploads have a separate group with
@@ -197,7 +207,12 @@ a normal local build uses `.env` for draft verification. Builds need network
 access to Sanity. The repository has no lint/type-check/test package scripts.
 Local checks cannot verify GitHub scheduling, cancellation, or webhook delivery.
 
-### Verified setup status — 11 November 2026
+### Recorded setup status — 11 November 2026
+
+This is the migration's historical verification record, not a live status
+report. Re-check external configuration when activating or troubleshooting the
+pipeline; the tracked webhook templates intentionally remain disabled and omit
+authentication.
 
 - Removed the local `workers/sanity-preview/` implementation, tests and config.
   No Worker was deployed, and the account's Worker script inventory was empty.
@@ -231,11 +246,12 @@ Local checks cannot verify GitHub scheduling, cancellation, or webhook delivery.
   ```
 
 GitHub secrets, environment restrictions, branch/tag rulesets and live workflow
-execution are not configured or verified by this change. Files remain local
-until committed and pushed. Existing deployments remain hosted, but the old
-Cloudflare build path is now retired: configure GitHub before expecting new
-builds. Live webhook burst/cancellation behavior and end-to-end uploads still
-require activation testing.
+execution were not configured or verified during that migration. Tracked files
+alone do not establish whether workflows have been pushed to `main` or external
+credentials and protections have since been configured. The recorded cleanup
+retired the old Cloudflare build path while preserving hosted deployments.
+Verify GitHub configuration, live webhook burst/cancellation behavior, and
+end-to-end uploads as part of activation.
 
 References: [GitHub concurrency](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency),
 [GitHub dispatch authentication](https://docs.github.com/en/rest/repos/repos#create-a-repository-dispatch-event),

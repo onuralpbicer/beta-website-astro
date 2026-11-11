@@ -1,12 +1,22 @@
 ## Development
 
+Use Node 24 to match CI and pnpm 10.33.0, pinned in `package.json`. Install
+dependencies with `pnpm install --frozen-lockfile`.
+
 When starting the dev server, use background mode:
 
-```
-astro dev --background
+```sh
+pnpm exec astro dev --background
 ```
 
-Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
+Manage the background server with `pnpm exec astro dev stop`,
+`pnpm exec astro dev status`, and `pnpm exec astro dev logs`.
+
+The Sanity perspective is selected in `astro.config.mts`: a non-empty
+`SANITY_PREVIEW_TOKEN` enables drafts; an empty token uses published content.
+Keep the read token in the ignored `.env` file. Use
+`SANITY_PREVIEW_TOKEN='' pnpm build` to verify published output even when `.env`
+contains a draft token. `pnpm preview` serves the existing `dist/` output.
 
 ## Sanity schema and type generation
 
@@ -35,6 +45,13 @@ building, and deploying. Scope debounce cancellation to jobs that cannot interru
 an upload. Keep webhook credentials and deploy-hook URLs out of tracked files.
 Release uploads store the version tag in Cloudflare's commit-message metadata;
 content rebuilds must preserve it while assigning a new HTML body build ID.
+Merging to `main` runs checks and a draft preview; only valid `vMAJOR.MINOR.PATCH`
+tags release production code. Webhook debounce waits happen before builds:
+preview cancellation covers waiting/building, while production cancellation
+covers only the waiting job. Public build attributes come from
+`src/shared/buildMetadata.ts` and are used by the shared layout and custom 404.
+Treat the deployment document's dated remote setup notes as historical; verify
+remote state before claiming secrets, webhooks, or protection rules are active.
 
 Full documentation: https://docs.astro.build
 
@@ -55,16 +72,20 @@ Supported locales are English (`en`) and Turkish (`tr`), with Turkish as the
 default locale. Public routes use localized slugs, including `/tr/ana-sayfa` and
 `/en/home`.
 
-The main shared document shell is `src/components/PageLayout.astro`. It fetches
-the header, footer, and localized page entry, then handles canonical URLs,
-alternate-language links, and SEO metadata. The catch-all localized route is
-`src/pages/[lang]/[...slug]/index.astro`.
+The catch-all localized route is `src/pages/[lang]/[...slug]/index.astro`. Its
+`getStaticPaths()` fetches the route entries, sluggable content types, shared
+header/footer for each locale, and each localized page entry at build time.
+It selects the page component and passes data to
+`src/components/PageLayout.astro`, the shared HTML shell responsible for
+canonical URLs, alternate-language links, SEO metadata, and build attributes.
+UI translations live in `src/shared/translations.ts`; supported languages live
+in `sanity/config.ts`.
 
 ## Sanity content model
 
 Schema definitions live in `sanity/schemaTypes/`. The repeatable page types are
 `richTextPage`, `productPage`, `productCategoriesPage`,
-`productSubcategoriesPage`, and `servicesPage`. `footerColumn` is also
+and `productSubcategoriesPage`. `footerColumn` is also
 repeatable and is referenced by `footer`.
 
 The following are singletons and must use fixed document IDs equal to their type
@@ -112,9 +133,22 @@ Tailwind for styling instead of creating custom normal css in <style> blocks.
 
 `src/shared/queries.ts` is the source of truth for GROQ queries.
 `src/shared/sanity.types.ts` is generated and should not be edited by hand.
+Schema extraction creates `sanity/schema.json`, which is not currently tracked.
+Its output path and type generation settings are defined in `sanity.cli.ts`.
+Run schema extraction before type generation when that file is absent.
 Run `pnpm sanity typegen generate` after query changes, and run `pnpm build`
 after route or component changes. Static generation fetches Sanity, so a build
 can fail when the Sanity API or network is unavailable.
+
+CI currently runs frozen dependency installation and a published Astro build;
+there are no lint/type-check/test package scripts or explicit schema/type
+generation workflow steps. For documentation-only changes, check links, paths,
+and formatting without requiring a network-dependent site build.
+
+Search indexing is currently blocked by `public/robots.txt`, `public/_headers`,
+and the robots meta tag in `src/components/PageLayout.astro`, including in
+production builds. Review all three together when changing launch/indexing
+behavior.
 
 If pnpm is unavailable but dependencies are installed, use the matching binary
 under `node_modules/.bin/`, such as
