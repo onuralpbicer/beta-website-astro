@@ -12,7 +12,7 @@
 		"astro": "astro"
 	},
 	"dependencies": {
-		"@astrojs/react": "^6.0.2",
+		"@astrojs/react": "^7.1.7",
 		"@sanity/astro": "^3.5.0",
 		"@sanity/client": "^7.26.2",
 		"@sanity/locale-tr-tr": "^1.2.36",
@@ -21,14 +21,14 @@
 		"@types/react": "^19.2.18",
 		"@types/react-dom": "^19.2.4",
 		"@types/react-is": "^19.2.0",
-		"astro": "^7.2.0",
+		"astro": "^7.4.10",
 		"dotenv": "^17.4.2",
 		"groq": "^6.9.2",
 		"prettier": "^3.9.6",
 		"react": "^19.2.8",
 		"react-dom": "^19.2.8",
 		"react-is": "^19.2.8",
-		"sanity": "^6.9.2",
+		"sanity": "^6.23.0",
 		"sanity-plugin-internationalized-array": "^5.1.27",
 		"styled-components": "^6.5.1",
 		"tailwindcss": "^4.3.3"
